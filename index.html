@@ -1,15 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>TEST PAGE</title>
+  <title>Notion API Test</title>
 </head>
-<body style="font-family: Arial; padding: 40px;">
-  <h1>TEST PAGE IS LIVE</h1>
 
-  <button onclick="document.getElementById('result').innerText = 'YES — button works!'">
-    Click me
+<body style="font-family: Arial; padding: 40px; background: #F5F0EB;">
+  <h1>Notion API Test</h1>
+
+  <button id="syncBtn" style="padding: 12px 18px;">
+    Test API
   </button>
 
-  <h2 id="result">Waiting...</h2>
+  <h2 id="status">Waiting...</h2>
+
+  <pre id="output" style="background: white; padding: 15px; border-radius: 8px; white-space: pre-wrap;"></pre>
+
+  <script>
+    document.getElementById("syncBtn").addEventListener("click", async function () {
+      const status = document.getElementById("status");
+      const output = document.getElementById("output");
+
+      status.innerText = "Clicked — checking API...";
+      output.innerText = "";
+
+      try {
+        const response = await fetch("/api/sync", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
+        const text = await response.text();
+
+        status.innerText = "API responded";
+        output.innerText = text;
+      } catch (error) {
+        status.innerText = "Fetch failed";
+        output.innerText = error.message;
+      }
+    });
+  </script>
 </body>
 </html>
