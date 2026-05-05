@@ -22,6 +22,7 @@ export default async function handler(req, res) {
   };
 
   try {
+    // ✅ TASKS
     const tasksResponse = await fetch(
       "https://api.notion.com/v1/databases/31bc1adacbe7802dac64dc95609a9496/query",
       {
@@ -49,12 +50,26 @@ export default async function handler(req, res) {
       status: page.properties.Status?.status?.name || "",
     }));
 
+    // ✅ CLIENTS (FILTERED)
     const clientsResponse = await fetch(
       "https://api.notion.com/v1/databases/323c1adacbe780648916df44ef5a8465/query",
       {
         method: "POST",
         headers,
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          filter: {
+            or: [
+              {
+                property: "This Week Focus",
+                rich_text: { is_not_empty: true },
+              },
+              {
+                property: "Next Step",
+                rich_text: { is_not_empty: true },
+              },
+            ],
+          },
+        }),
       }
     );
 
@@ -69,10 +84,13 @@ export default async function handler(req, res) {
 
     const clientFocus = (clientsData.results || []).map((page) => ({
       client: page.properties.Clients?.title?.[0]?.plain_text || "Unknown",
-      focus: page.properties["This Week Focus"]?.rich_text?.[0]?.plain_text || "",
-      nextStep: page.properties["Next Step"]?.rich_text?.[0]?.plain_text || "",
+      focus:
+        page.properties["This Week Focus"]?.rich_text?.[0]?.plain_text || "",
+      nextStep:
+        page.properties["Next Step"]?.rich_text?.[0]?.plain_text || "",
     }));
 
+    // ✅ HOME
     const today = new Date().toISOString().split("T")[0];
 
     const homeResponse = await fetch(
@@ -101,15 +119,20 @@ export default async function handler(req, res) {
     const homeToday = homeData.results?.[0]
       ? {
           mealPlan:
-            homeData.results[0].properties["Meal Plan"]?.rich_text?.[0]?.plain_text || "",
+            homeData.results[0].properties["Meal Plan"]?.rich_text?.[0]
+              ?.plain_text || "",
           movement:
             homeData.results[0].properties.Movement?.select?.name || "",
           energyNote:
             homeData.results[0].properties["Energy Note"]?.select?.name || "",
           dailyBasics:
-            homeData.results[0].properties["Daily Basics"]?.multi_select?.map((s) => s.name) || [],
+            homeData.results[0].properties["Daily Basics"]?.multi_select?.map(
+              (s) => s.name
+            ) || [],
           homeAnchors:
-            homeData.results[0].properties["Home Anchor"]?.multi_select?.map((s) => s.name) || [],
+            homeData.results[0].properties["Home Anchor"]?.multi_select?.map(
+              (s) => s.name
+            ) || [],
         }
       : {};
 
