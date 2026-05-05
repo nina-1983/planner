@@ -1,3 +1,4 @@
+<!-- FULL index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,6 +113,18 @@
     .toggle-button.active {
       background: var(--sage);
       color: white;
+    }
+
+    .weekend-work-button {
+      align-self: flex-start;
+      background: var(--warm-white);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 9px 15px;
+      font-size: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
     }
 
     .toggle-row {
@@ -293,6 +306,7 @@
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState("");
       const [todayOnly, setTodayOnly] = useState(false);
+      const [showWorkWeekend, setShowWorkWeekend] = useState(false);
 
       const [notionData, setNotionData] = useState(() =>
         load("planner_notionData", {
@@ -413,7 +427,9 @@
               )}
             </div>
           ) : (
-            <p>No home data yet. Hit Sync Notion.</p>
+            <p style={{ color: "var(--muted)", fontSize: "13px" }}>
+              No home data yet. Hit Sync Notion.
+            </p>
           )}
         </div>
       );
@@ -497,18 +513,21 @@
               </div>
             </header>
 
+            <HomeCard />
+
             {isWeekend ? (
               <>
-                <>
-  <HomeCard />
+                <button
+                  className="weekend-work-button"
+                  onClick={() => setShowWorkWeekend(!showWorkWeekend)}
+                >
+                  {showWorkWeekend ? "Hide work again" : "Peek at work"}
+                </button>
 
-  {!isWeekend && <WorkCard />}
-</>
+                {showWorkWeekend && <WorkCard />}
               </>
             ) : (
-              <>
-                <WorkCard />
-              </>
+              <WorkCard />
             )}
 
             <div className="card">
