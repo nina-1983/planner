@@ -10,594 +10,97 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap');
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: Arial, sans-serif;
       background: #F5F0EB;
-      color: #2C2420;
+      padding: 20px;
     }
-
-    :root {
-      --cream: #F5F0EB;
-      --warm-white: #FDFAF7;
-      --sage: #8A9E8A;
-      --sage-light: #C8D8C8;
-      --dusty-rose: #C49A8A;
-      --warm-brown: #2C2420;
-      --muted: #7A6E68;
-      --border: #E8E0D8;
-      --shadow: 0 2px 16px rgba(44,36,32,0.07);
-      --shadow-hover: 0 6px 24px rgba(44,36,32,0.12);
-    }
-
-    .planner {
-      min-height: 100vh;
-      padding: 24px 16px 48px;
-      background: var(--cream);
-      background-image:
-        radial-gradient(circle at 15% 10%, rgba(138,158,138,0.12) 0%, transparent 50%),
-        radial-gradient(circle at 85% 80%, rgba(196,154,138,0.10) 0%, transparent 50%);
-    }
-
-    .inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .header {
-      background: var(--warm-white);
-      border-radius: 24px;
-      padding: 28px 32px;
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .header-left { flex: 1; }
-
-    .header-date {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--dusty-rose);
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-
-    .header-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(26px, 4vw, 38px);
-      font-weight: 600;
-      color: var(--warm-brown);
-      line-height: 1.2;
-    }
-
-    .header-quote {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 8px;
-      font-style: italic;
-    }
-
-    .header-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 10px;
-    }
-
-    .header-dot {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--sage-light), var(--sage));
-      opacity: 0.6;
-      flex-shrink: 0;
-    }
-
-    .sync-button {
-      background: var(--sage);
-      color: var(--warm-white);
+    button {
+      padding: 10px 15px;
+      background: #8A9E8A;
+      color: white;
       border: none;
-      border-radius: 10px;
-      padding: 8px 14px;
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .sync-button:hover { background: #7A8D7A; }
-    .sync-button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .sync-indicator {
-      font-size: 11px;
-      color: var(--sage);
-      letter-spacing: 0.5px;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    .sync-indicator.visible { opacity: 1; }
-
-    .error-message {
-      font-size: 12px;
-      color: #9B4A3A;
-      background: #F7E8E2;
-      padding: 8px 10px;
-      border-radius: 8px;
-      max-width: 320px;
-      text-align: right;
-      line-height: 1.4;
-    }
-
-    .card {
-      background: var(--warm-white);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-      transition: box-shadow 0.2s ease;
-    }
-
-    .card:hover { box-shadow: var(--shadow-hover); }
-
-    .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 17px;
-      font-weight: 500;
-      color: var(--warm-brown);
-      margin-bottom: 18px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--dusty-rose);
-      font-weight: 600;
-      margin-bottom: 12px;
-      padding-top: 8px;
-    }
-
-    .task-item {
-      padding: 10px 12px;
-      background: var(--cream);
-      border-radius: 10px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .task-content {
-      flex: 1;
-      font-size: 13.5px;
-    }
-
-    .task-priority {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-
-    .task-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .home-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    @media(max-width: 700px) {
-      .home-grid { grid-template-columns: 1fr; }
-      .header-right { align-items: flex-start; }
-      .error-message { text-align: left; }
-    }
-
-    .home-item {
-      padding: 12px;
-      background: var(--cream);
-      border-radius: 10px;
-    }
-
-    .home-item-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .home-item-value {
-      font-size: 13px;
-      color: var(--warm-brown);
-      font-weight: 500;
-    }
-
-    .basics-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .basic-tag {
-      background: var(--sage);
-      color: var(--warm-white);
-      padding: 2px 7px;
       border-radius: 6px;
-      font-size: 10px;
-      font-weight: 500;
+      cursor: pointer;
     }
-
-    .client-item {
-      padding: 12px;
-      background: var(--cream);
-      border-radius: 10px;
-      margin-bottom: 8px;
-      border-left: 3px solid var(--dusty-rose);
+    .error {
+      margin-top: 10px;
+      padding: 10px;
+      background: #ffe5e0;
+      color: #a33;
+      border-radius: 6px;
+      font-size: 13px;
+      white-space: pre-wrap;
     }
-
-    .client-name {
+    .success {
+      margin-top: 10px;
+      color: green;
+      font-size: 13px;
+    }
+    pre {
+      background: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 20px;
       font-size: 12px;
-      font-weight: 600;
-      color: var(--warm-brown);
-      margin-bottom: 4px;
-    }
-
-    .client-focus {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 3px;
-    }
-
-    .brain-textarea { min-height: 160px; }
-    .notes-textarea { min-height: 110px; }
-
-    textarea {
-      width: 100%;
-      background: var(--cream);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13.5px;
-      color: var(--warm-brown);
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
-      resize: none;
-    }
-
-    textarea:focus {
-      border-color: var(--sage);
-      background: var(--warm-white);
-    }
-
-    textarea::placeholder {
-      color: #B0A8A2;
+      overflow-x: auto;
     }
   </style>
 </head>
 
 <body>
-  <div id="root"></div>
+  <h2>Planner Sync Test</h2>
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+  <button onclick="syncNotion()">Sync Notion</button>
 
-    const quotes = [
-      "One thing at a time. Everything else can wait.",
-      "Small moves. Steady pace. Real results.",
-      "You don't need more hours — you need clearer priorities.",
-      "Build the day before it builds itself.",
-      "Slow is smooth. Smooth is fast.",
-    ];
+  <div id="status"></div>
+  <pre id="output"></pre>
 
-    function load(key, fallback) {
+  <script>
+    async function syncNotion() {
+      const status = document.getElementById("status");
+      const output = document.getElementById("output");
+
+      status.innerHTML = "Syncing...";
+      output.textContent = "";
+
       try {
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-      } catch {
-        return fallback;
+        const response = await fetch("/api/sync", {
+          method: "POST",
+        });
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(
+            "❌ API is NOT returning JSON.\n\nCheck your api/sync.js file location."
+          );
+        }
+
+        if (!response.ok) {
+          console.log("Full error from API:", data);
+
+          const detail =
+            data.details?.message ||
+            data.details?.error ||
+            JSON.stringify(data.details, null, 2) ||
+            "Unknown error";
+
+          throw new Error(`${data.error}\n\n${detail}`);
+        }
+
+        status.innerHTML = '<div class="success">✅ Sync successful</div>';
+        output.textContent = JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        status.innerHTML = `<div class="error">${err.message}</div>`;
+        console.error(err);
       }
     }
-
-    function PlannerDashboard() {
-      const today = new Date();
-
-      const todayStr = today.toLocaleDateString("en-GB", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
-
-      const todayQuote = quotes[today.getDay() % quotes.length];
-
-      const [brainDump, setBrainDump] = useState(() => load("planner_brainDump", ""));
-      const [notes, setNotes] = useState(() => load("planner_notes", ""));
-      const [synced, setSynced] = useState(false);
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-
-      const [notionData, setNotionData] = useState(() =>
-        load("planner_notionData", {
-          weekTasks: [],
-          clientFocus: [],
-          homeToday: {},
-        })
-      );
-
-      useEffect(() => {
-        localStorage.setItem("planner_brainDump", JSON.stringify(brainDump));
-      }, [brainDump]);
-
-      useEffect(() => {
-        localStorage.setItem("planner_notes", JSON.stringify(notes));
-      }, [notes]);
-
-      useEffect(() => {
-        localStorage.setItem("planner_notionData", JSON.stringify(notionData));
-      }, [notionData]);
-
-      const handleSync = async () => {
-        setLoading(true);
-        setError("");
-
-        try {
-          const response = await fetch("/api/sync", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          const text = await response.text();
-
-          let data;
-
-          try {
-            data = JSON.parse(text);
-          } catch {
-            throw new Error(
-              "API route is not returning JSON. Check that api/sync.js is in the root of your project, not inside public or src."
-            );
-          }
-
-          if (!response.ok) {
-            throw new Error(data.error || "Sync failed");
-          }
-
-          setNotionData(data);
-          setSynced(true);
-          setTimeout(() => setSynced(false), 2000);
-        } catch (error) {
-          console.error("Sync error:", error);
-          setError(error.message || "Notion sync failed");
-        }
-
-        setLoading(false);
-      };
-
-      const { weekTasks = [], clientFocus = [], homeToday = {} } = notionData;
-
-      const todaysTasks = weekTasks.filter((task) => {
-        if (!task.dueDate || task.dueDate === "No date") return false;
-
-        try {
-          const due = new Date(task.dueDate);
-          return due.toDateString() === today.toDateString();
-        } catch {
-          return false;
-        }
-      });
-
-      return (
-        <div className="planner">
-          <div className="inner">
-            <header className="header">
-              <div className="header-left">
-                <p className="header-date">{todayStr}</p>
-                <h1 className="header-title">My Planner Dashboard</h1>
-                <p className="header-quote">{todayQuote}</p>
-              </div>
-
-              <div className="header-right">
-                <button
-                  className="sync-button"
-                  onClick={handleSync}
-                  disabled={loading}
-                >
-                  {loading ? "Syncing..." : "Sync Notion"}
-                </button>
-
-                <span className={`sync-indicator${synced ? " visible" : ""}`}>
-                  ✓ synced
-                </span>
-
-                {error && <div className="error-message">{error}</div>}
-
-                <div className="header-dot"></div>
-              </div>
-            </header>
-
-            <div className="card">
-              <h2 className="card-title">Work</h2>
-
-              {todaysTasks.length > 0 && (
-                <React.Fragment>
-                  <p className="section-label">Today's priority</p>
-                  <div className="task-list">
-                    {todaysTasks.slice(0, 1).map((task, i) => (
-                      <div className="task-item" key={i}>
-                        <div className="task-content">
-                          <div>{task.name}</div>
-                          <div className="task-priority">{task.priority}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </React.Fragment>
-              )}
-
-              {weekTasks.length > 0 && (
-                <React.Fragment>
-                  <p className="section-label" style={{ marginTop: "16px" }}>
-                    This week
-                  </p>
-
-                  <div className="task-list">
-                    {weekTasks.slice(0, 4).map((task, i) => (
-                      <div className="task-item" key={i}>
-                        <div className="task-content">
-                          <div>{task.name}</div>
-                          <div className="task-priority">
-                            {task.priority} • {task.dueDate}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </React.Fragment>
-              )}
-
-              {clientFocus.length > 0 && (
-                <React.Fragment>
-                  <p className="section-label" style={{ marginTop: "16px" }}>
-                    Client focus
-                  </p>
-
-                  <div className="task-list">
-                    {clientFocus.map((item, i) => (
-                      <div className="client-item" key={i}>
-                        <div className="client-name">{item.client}</div>
-                        <div className="client-focus">{item.focus}</div>
-
-                        {item.nextStep && (
-                          <div style={{
-                            fontSize: "11px",
-                            color: "var(--muted)",
-                            marginTop: "3px",
-                          }}>
-                            Next: {item.nextStep}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </React.Fragment>
-              )}
-
-              {todaysTasks.length === 0 &&
-                weekTasks.length === 0 &&
-                clientFocus.length === 0 && (
-                  <p style={{ color: "var(--muted)", fontSize: "13px" }}>
-                    No work data yet. Hit "Sync Notion" to pull your tasks and client focus.
-                  </p>
-                )}
-            </div>
-
-            <div className="card">
-              <h2 className="card-title">Home</h2>
-
-              {Object.keys(homeToday).length > 0 ? (
-                <div className="home-grid">
-                  {homeToday.mealPlan && (
-                    <div className="home-item">
-                      <div className="home-item-label">Meal plan</div>
-                      <div className="home-item-value">{homeToday.mealPlan}</div>
-                    </div>
-                  )}
-
-                  {homeToday.movement && (
-                    <div className="home-item">
-                      <div className="home-item-label">Movement</div>
-                      <div className="home-item-value">{homeToday.movement}</div>
-                    </div>
-                  )}
-
-                  {homeToday.energyNote && (
-                    <div className="home-item">
-                      <div className="home-item-label">Energy</div>
-                      <div className="home-item-value">{homeToday.energyNote}</div>
-                    </div>
-                  )}
-
-                  {homeToday.dailyBasics && homeToday.dailyBasics.length > 0 && (
-                    <div className="home-item">
-                      <div className="home-item-label">Daily basics</div>
-                      <div className="basics-list">
-                        {homeToday.dailyBasics.map((basic, i) => (
-                          <div key={i} className="basic-tag">{basic}</div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {homeToday.homeAnchors && homeToday.homeAnchors.length > 0 && (
-                    <div className="home-item">
-                      <div className="home-item-label">Anchors</div>
-                      <div className="basics-list">
-                        {homeToday.homeAnchors.map((anchor, i) => (
-                          <div key={i} className="basic-tag">{anchor}</div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p style={{ color: "var(--muted)", fontSize: "13px" }}>
-                  No home data yet. Hit "Sync Notion" to pull today's entry.
-                </p>
-              )}
-            </div>
-
-            <div className="card">
-              <h2 className="card-title">Brain dump</h2>
-              <textarea
-                className="brain-textarea"
-                value={brainDump}
-                onChange={(e) => setBrainDump(e.target.value)}
-                placeholder="Get it out of your head..."
-              />
-            </div>
-
-            <div className="card">
-              <h2 className="card-title">Notes & reminders</h2>
-              <textarea
-                className="notes-textarea"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Anything you don't want to forget..."
-              />
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    ReactDOM.render(<PlannerDashboard />, document.getElementById("root"));
   </script>
 </body>
 </html>
