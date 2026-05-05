@@ -24,7 +24,6 @@
       --cream: #F5F0EB;
       --warm-white: #FDFAF7;
       --sage: #8A9E8A;
-      --sage-light: #C8D8C8;
       --dusty-rose: #C49A8A;
       --warm-brown: #2C2420;
       --muted: #7A6E68;
@@ -92,7 +91,7 @@
       gap: 10px;
     }
 
-    .sync-button {
+    .sync-button, .toggle-button {
       background: var(--sage);
       color: white;
       border: none;
@@ -102,6 +101,24 @@
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+
+    .toggle-button {
+      background: var(--cream);
+      color: var(--warm-brown);
+      border: 1px solid var(--border);
+    }
+
+    .toggle-button.active {
+      background: var(--sage);
+      color: white;
+    }
+
+    .toggle-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
     }
 
     .sync-button:disabled {
@@ -249,8 +266,17 @@
       }
     }
 
+    function priorityRank(priority) {
+      if (!priority) return 99;
+      if (priority.includes("🔴") || priority.toLowerCase().includes("high")) return 1;
+      if (priority.includes("🟡") || priority.toLowerCase().includes("medium")) return 2;
+      if (priority.includes("🟢") || priority.toLowerCase().includes("low")) return 3;
+      return 99;
+    }
+
     function PlannerDashboard() {
       const today = new Date();
+      const isWeekend = today.getDay() === 0 || today.getDay() === 6;
 
       const todayStr = today.toLocaleDateString("en-GB", {
         weekday: "long",
@@ -266,6 +292,7 @@
       const [synced, setSynced] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState("");
+      const [todayOnly, setTodayOnly] = useState(false);
 
       const [notionData, setNotionData] = useState(() =>
         load("planner_notionData", {
@@ -322,10 +349,133 @@
 
       const { weekTasks = [], clientFocus = [], homeToday = {} } = notionData;
 
-      const todaysTasks = weekTasks.filter((task) => {
+      const sortedTasks = [...weekTasks].sort((a, b) => {
+        const priorityDiff = priorityRank(a.priority) - priorityRank(b.priority);
+        if (priorityDiff !== 0) return priorityDiff;
+
+        return new Date(a.dueDate || "9999-12-31") - new Date(b.dueDate || "9999-12-31");
+      });
+
+      const todaysTasks = sortedTasks.filter((task) => {
         if (!task.dueDate) return false;
         return new Date(task.dueDate).toDateString() === today.toDateString();
       });
+
+      const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
+
+      const HomeCard = () => (
+        <div className="card">
+          <h2 className="card-title">Home</h2>
+
+          {Object.keys(homeToday).length > 0 ? (
+            <div className="home-grid">
+              {homeToday.mealPlan && (
+                <div className="home-item">
+                  <div className="home-item-label">Meal plan</div>
+                  <div className="home-item-value">{homeToday.mealPlan}</div>
+                </div>
+              )}
+
+              {homeToday.movement && (
+                <div className="home-item">
+                  <div className="home-item-label">Movement</div>
+                  <div className="home-item-value">{homeToday.movement}</div>
+                </div>
+              )}
+
+              {homeToday.energyNote && (
+                <div className="home-item">
+                  <div className="home-item-label">Energy</div>
+                  <div className="home-item-value">{homeToday.energyNote}</div>
+                </div>
+              )}
+
+              {homeToday.dailyBasics?.length > 0 && (
+                <div className="home-item">
+                  <div className="home-item-label">Daily basics</div>
+                  <div className="basics-list">
+                    {homeToday.dailyBasics.map((basic, i) => (
+                      <span className="basic-tag" key={i}>{basic}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {homeToday.homeAnchors?.length > 0 && (
+                <div className="home-item">
+                  <div className="home-item-label">Anchors</div>
+                  <div className="basics-list">
+                    {homeToday.homeAnchors.map((anchor, i) => (
+                      <span className="basic-tag" key={i}>{anchor}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p>No home data yet. Hit Sync Notion.</p>
+          )}
+        </div>
+      );
+
+      const WorkCard = () => (
+        <div className="card">
+          <h2 className="card-title">Work</h2>
+
+          <div className="toggle-row">
+            <button
+              className={`toggle-button ${!todayOnly ? "active" : ""}`}
+              onClick={() => setTodayOnly(false)}
+            >
+              This week
+            </button>
+
+            <button
+              className={`toggle-button ${todayOnly ? "active" : ""}`}
+              onClick={() => setTodayOnly(true)}
+            >
+              Today only
+            </button>
+          </div>
+
+          {visibleTasks.length > 0 ? (
+            <>
+              <p className="section-label">
+                {todayOnly ? "Tasks due today" : "Tasks due this week"}
+              </p>
+
+              {visibleTasks.map((task, i) => (
+                <div className="task-item" key={i}>
+                  <div>{task.name}</div>
+                  <div className="task-priority">
+                    {task.priority} • {task.dueDate}
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <p style={{ color: "var(--muted)", fontSize: "13px" }}>
+              {todayOnly ? "No tasks due today." : "No tasks due this week."}
+            </p>
+          )}
+
+          {clientFocus.length > 0 && (
+            <>
+              <p className="section-label">Client focus</p>
+
+              {clientFocus.map((item, i) => (
+                <div className="client-item" key={i}>
+                  <div className="client-name">{item.client}</div>
+                  {item.focus && <div className="client-focus">{item.focus}</div>}
+                  {item.nextStep && (
+                    <div className="client-focus">Next: {item.nextStep}</div>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      );
 
       return (
         <div className="planner">
@@ -347,103 +497,16 @@
               </div>
             </header>
 
-            <div className="card">
-              <h2 className="card-title">Work</h2>
-
-              {todaysTasks.length > 0 && (
-                <>
-                  <p className="section-label">Today's priority</p>
-                  {todaysTasks.slice(0, 1).map((task, i) => (
-                    <div className="task-item" key={i}>
-                      <div>{task.name}</div>
-                      <div className="task-priority">{task.priority}</div>
-                    </div>
-                  ))}
-                </>
-              )}
-
-              {weekTasks.length > 0 && (
-                <>
-                  <p className="section-label">This week</p>
-                  {weekTasks.slice(0, 7).map((task, i) => (
-                    <div className="task-item" key={i}>
-                      <div>{task.name}</div>
-                      <div className="task-priority">
-                        {task.priority} • {task.dueDate}
-                      </div>
-                    </div>
-                  ))}
-                </>
-              )}
-
-              {clientFocus.length > 0 && (
-                <>
-                  <p className="section-label">Client focus</p>
-                  {clientFocus.map((item, i) => (
-                    <div className="client-item" key={i}>
-                      <div className="client-name">{item.client}</div>
-                      {item.focus && <div className="client-focus">{item.focus}</div>}
-                      {item.nextStep && (
-                        <div className="client-focus">Next: {item.nextStep}</div>
-                      )}
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-
-            <div className="card">
-              <h2 className="card-title">Home</h2>
-
-              {Object.keys(homeToday).length > 0 ? (
-                <div className="home-grid">
-                  {homeToday.mealPlan && (
-                    <div className="home-item">
-                      <div className="home-item-label">Meal plan</div>
-                      <div className="home-item-value">{homeToday.mealPlan}</div>
-                    </div>
-                  )}
-
-                  {homeToday.movement && (
-                    <div className="home-item">
-                      <div className="home-item-label">Movement</div>
-                      <div className="home-item-value">{homeToday.movement}</div>
-                    </div>
-                  )}
-
-                  {homeToday.energyNote && (
-                    <div className="home-item">
-                      <div className="home-item-label">Energy</div>
-                      <div className="home-item-value">{homeToday.energyNote}</div>
-                    </div>
-                  )}
-
-                  {homeToday.dailyBasics?.length > 0 && (
-                    <div className="home-item">
-                      <div className="home-item-label">Daily basics</div>
-                      <div className="basics-list">
-                        {homeToday.dailyBasics.map((basic, i) => (
-                          <span className="basic-tag" key={i}>{basic}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {homeToday.homeAnchors?.length > 0 && (
-                    <div className="home-item">
-                      <div className="home-item-label">Anchors</div>
-                      <div className="basics-list">
-                        {homeToday.homeAnchors.map((anchor, i) => (
-                          <span className="basic-tag" key={i}>{anchor}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p>No home data yet. Hit Sync Notion.</p>
-              )}
-            </div>
+            {isWeekend ? (
+              <>
+                <HomeCard />
+                <WorkCard />
+              </>
+            ) : (
+              <>
+                <WorkCard />
+              </>
+            )}
 
             <div className="card">
               <h2 className="card-title">Brain dump</h2>
