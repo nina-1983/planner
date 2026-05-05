@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
   if (!NOTION_TOKEN) {
     return res.status(500).json({
-      error: "Missing NOTION_TOKEN in Vercel environment variables",
+      error: "Missing NOTION_TOKEN in Vercel",
     });
   }
 
@@ -26,27 +26,13 @@ export default async function handler(req, res) {
   };
 
   try {
-    // Fetch My Tasks
+    // ✅ UPDATED My Tasks DB ID (this is the key fix)
     const tasksResponse = await fetch(
-      "https://api.notion.com/v1/databases/31bc1adacbe7802dac64dc95609a9496/query",
+      "https://api.notion.com/v1/databases/325c1adacbe780dd883ef6b16f3b5855/query",
       {
         method: "POST",
         headers,
-        body: JSON.stringify({
-          filter: {
-            and: [
-              {
-                property: "Status",
-                status: { does_not_equal: "Done" },
-              },
-              {
-                property: "Status",
-                status: { does_not_equal: "Cancelled" },
-              },
-            ],
-          },
-          sorts: [{ property: "Due Date", direction: "ascending" }],
-        }),
+        body: JSON.stringify({}),
       }
     );
 
@@ -54,7 +40,7 @@ export default async function handler(req, res) {
 
     if (!tasksResponse.ok) {
       return res.status(tasksResponse.status).json({
-        error: "Failed to fetch My Tasks",
+        error: "My Tasks failed",
         details: tasksData,
       });
     }
@@ -62,22 +48,17 @@ export default async function handler(req, res) {
     const weekTasks = (tasksData.results || []).map((page) => ({
       name: page.properties.Name?.title?.[0]?.plain_text || "Untitled",
       priority: page.properties.Priority?.select?.name || "No priority",
-      dueDate: page.properties["Due Date"]?.date?.start || "No date",
-      status: page.properties.Status?.status?.name || "Not started",
+      dueDate: page.properties["Due Date"]?.date?.start || "",
+      status: page.properties.Status?.status?.name || "",
     }));
 
-    // Fetch Client Work Board
+    // ✅ Client Board (unchanged)
     const clientsResponse = await fetch(
       "https://api.notion.com/v1/databases/323c1adacbe780648916df44ef5a8465/query",
       {
         method: "POST",
         headers,
-        body: JSON.stringify({
-          filter: {
-            property: "Status",
-            select: { equals: "Focus This Week" },
-          },
-        }),
+        body: JSON.stringify({}),
       }
     );
 
@@ -85,7 +66,7 @@ export default async function handler(req, res) {
 
     if (!clientsResponse.ok) {
       return res.status(clientsResponse.status).json({
-        error: "Failed to fetch Client Work Board",
+        error: "Client board failed",
         details: clientsData,
       });
     }
@@ -94,10 +75,11 @@ export default async function handler(req, res) {
       client: page.properties.Clients?.title?.[0]?.plain_text || "Unknown",
       focus:
         page.properties["This Week Focus"]?.rich_text?.[0]?.plain_text || "",
-      nextStep: page.properties["Next Step"]?.rich_text?.[0]?.plain_text || "",
+      nextStep:
+        page.properties["Next Step"]?.rich_text?.[0]?.plain_text || "",
     }));
 
-    // Fetch Daily Home Board
+    // ✅ Home Board
     const today = new Date().toISOString().split("T")[0];
 
     const homeResponse = await fetch(
@@ -118,7 +100,7 @@ export default async function handler(req, res) {
 
     if (!homeResponse.ok) {
       return res.status(homeResponse.status).json({
-        error: "Failed to fetch Daily Home Board",
+        error: "Home board failed",
         details: homeData,
       });
     }
@@ -149,10 +131,10 @@ export default async function handler(req, res) {
       homeToday,
     });
   } catch (error) {
-    console.error("Notion sync error:", error);
+    console.error("Notion error:", error);
 
     return res.status(500).json({
-      error: "Failed to sync Notion data",
+      error: "Server crash",
       details: error.message,
     });
   }
