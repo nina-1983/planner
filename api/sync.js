@@ -2,17 +2,15 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-
   const NOTION_TOKEN = process.env.NOTION_TOKEN;
   const headers = {
     'Authorization': `Bearer ${NOTION_TOKEN}`,
     'Notion-Version': '2022-06-28',
     'Content-Type': 'application/json',
   };
-
   try {
     // Fetch My Tasks
-    const tasksResponse = await fetch('https://api.notion.com/v1/databases/31bc1ada-cbe7-8009-a824-000baf8b7969/query', {
+    const tasksResponse = await fetch('https://api.notion.com/v1/databases/31bc1adacbe7802dac64dc95609a9496/query', {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -25,7 +23,6 @@ export default async function handler(req, res) {
         sorts: [{ property: 'Due Date', direction: 'ascending' }],
       }),
     });
-
     const tasksData = await tasksResponse.json();
     const weekTasks = (tasksData.results || []).map(page => ({
       name: page.properties.Name?.title?.[0]?.plain_text || 'Untitled',
@@ -33,9 +30,8 @@ export default async function handler(req, res) {
       dueDate: page.properties['Due Date']?.date?.start || 'No date',
       status: page.properties.Status?.status?.name || 'Not started',
     }));
-
     // Fetch Client Work Board (Focus This Week)
-    const clientsResponse = await fetch('https://api.notion.com/v1/databases/323c1ada-cbe7-8094-aee0-000b637bb80c/query', {
+    const clientsResponse = await fetch('https://api.notion.com/v1/databases/323c1adacbe780648916df44ef5a8465/query', {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -45,17 +41,15 @@ export default async function handler(req, res) {
         },
       }),
     });
-
     const clientsData = await clientsResponse.json();
     const clientFocus = (clientsData.results || []).map(page => ({
       client: page.properties.Clients?.title?.[0]?.plain_text || 'Unknown',
       focus: page.properties['This Week Focus']?.rich_text?.[0]?.plain_text || '',
       nextStep: page.properties['Next Step']?.rich_text?.[0]?.plain_text || '',
     }));
-
     // Fetch Daily Home Board (Today's entry)
     const today = new Date().toISOString().split('T')[0];
-    const homeResponse = await fetch('https://api.notion.com/v1/databases/dbd97c70-cbe8-4141-b12a-515862f3b703/query', {
+    const homeResponse = await fetch('https://api.notion.com/v1/databases/dd7ba18f385d407c977d1eb47f0671f2/query', {
       method: 'POST',
       headers,
       body: JSON.stringify({
@@ -65,7 +59,6 @@ export default async function handler(req, res) {
         },
       }),
     });
-
     const homeData = await homeResponse.json();
     const homeToday = homeData.results?.[0]
       ? {
@@ -76,7 +69,6 @@ export default async function handler(req, res) {
           homeAnchors: homeData.results[0].properties['Home Anchor']?.multi_select?.map(s => s.name) || [],
         }
       : {};
-
     res.status(200).json({
       weekTasks,
       clientFocus,
