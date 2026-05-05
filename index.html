@@ -1,106 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Planner Dashboard</title>
-
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #F5F0EB;
-      padding: 20px;
-    }
-    button {
-      padding: 10px 15px;
-      background: #8A9E8A;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .error {
-      margin-top: 10px;
-      padding: 10px;
-      background: #ffe5e0;
-      color: #a33;
-      border-radius: 6px;
-      font-size: 13px;
-      white-space: pre-wrap;
-    }
-    .success {
-      margin-top: 10px;
-      color: green;
-      font-size: 13px;
-    }
-    pre {
-      background: #fff;
-      padding: 10px;
-      border-radius: 6px;
-      margin-top: 20px;
-      font-size: 12px;
-      overflow-x: auto;
-    }
-  </style>
+  <title>TEST PAGE</title>
 </head>
+<body style="font-family: Arial; padding: 40px;">
+  <h1>TEST PAGE IS LIVE</h1>
 
-<body>
-  <h2>Planner Sync Test</h2>
+  <button onclick="document.getElementById('result').innerText = 'YES — button works!'">
+    Click me
+  </button>
 
-  <button onclick="syncNotion()">Sync Notion</button>
-
-  <div id="status"></div>
-  <pre id="output"></pre>
-
-  <script>
-    async function syncNotion() {
-      const status = document.getElementById("status");
-      const output = document.getElementById("output");
-
-      status.innerHTML = "Syncing...";
-      output.textContent = "";
-
-      try {
-        const response = await fetch("/api/sync", {
-          method: "POST",
-        });
-
-        const text = await response.text();
-
-        let data;
-
-        try {
-          data = JSON.parse(text);
-        } catch {
-          throw new Error(
-            "❌ API is NOT returning JSON.\n\nCheck your api/sync.js file location."
-          );
-        }
-
-        if (!response.ok) {
-          console.log("Full error from API:", data);
-
-          const detail =
-            data.details?.message ||
-            data.details?.error ||
-            JSON.stringify(data.details, null, 2) ||
-            "Unknown error";
-
-          throw new Error(`${data.error}\n\n${detail}`);
-        }
-
-        status.innerHTML = '<div class="success">✅ Sync successful</div>';
-        output.textContent = JSON.stringify(data, null, 2);
-
-      } catch (err) {
-        status.innerHTML = `<div class="error">${err.message}</div>`;
-        console.error(err);
-      }
-    }
-  </script>
+  <h2 id="result">Waiting...</h2>
 </body>
 </html>
