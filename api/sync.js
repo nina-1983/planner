@@ -70,6 +70,7 @@ export default async function handler(req, res) {
     }
 
     const weekTasks = (tasksData.results || []).map((page) => ({
+      id: page.id,
       name: page.properties.Name?.title?.[0]?.plain_text || "Untitled",
       priority: page.properties.Priority?.select?.name || "No priority",
       dueDate: page.properties["Due Date"]?.date?.start || "",
