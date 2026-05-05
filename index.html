@@ -1,4 +1,3 @@
-<!-- FULL index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -228,9 +227,27 @@
     .basic-tag {
       background: var(--sage);
       color: white;
-      padding: 3px 8px;
+      padding: 5px 8px;
       border-radius: 6px;
       font-size: 10px;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .check-row input {
+      margin-top: 2px;
+      accent-color: var(--sage);
+      cursor: pointer;
+    }
+
+    .checked-text {
+      text-decoration: line-through;
+      opacity: 0.55;
     }
 
     textarea {
@@ -287,9 +304,18 @@
       return 99;
     }
 
+    function toggleChecked(key, checkedItems, setCheckedItems) {
+      setCheckedItems({
+        ...checkedItems,
+        [key]: !checkedItems[key],
+      });
+    }
+
     function PlannerDashboard() {
       const today = new Date();
       const isWeekend = today.getDay() === 0 || today.getDay() === 6;
+
+      const todayKey = today.toISOString().split("T")[0];
 
       const todayStr = today.toLocaleDateString("en-GB", {
         weekday: "long",
@@ -307,6 +333,10 @@
       const [error, setError] = useState("");
       const [todayOnly, setTodayOnly] = useState(false);
       const [showWorkWeekend, setShowWorkWeekend] = useState(false);
+
+      const [checkedItems, setCheckedItems] = useState(() =>
+        load(`planner_checkedItems_${todayKey}`, {})
+      );
 
       const [notionData, setNotionData] = useState(() =>
         load("planner_notionData", {
@@ -327,6 +357,10 @@
       useEffect(() => {
         localStorage.setItem("planner_notionData", JSON.stringify(notionData));
       }, [notionData]);
+
+      useEffect(() => {
+        localStorage.setItem(`planner_checkedItems_${todayKey}`, JSON.stringify(checkedItems));
+      }, [checkedItems]);
 
       const handleSync = async () => {
         setLoading(true);
@@ -408,9 +442,22 @@
                 <div className="home-item">
                   <div className="home-item-label">Daily basics</div>
                   <div className="basics-list">
-                    {homeToday.dailyBasics.map((basic, i) => (
-                      <span className="basic-tag" key={i}>{basic}</span>
-                    ))}
+                    {homeToday.dailyBasics.map((basic, i) => {
+                      const key = `basic-${todayKey}-${basic}`;
+
+                      return (
+                        <label className="basic-tag check-row" key={key}>
+                          <input
+                            type="checkbox"
+                            checked={!!checkedItems[key]}
+                            onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
+                          />
+                          <span className={checkedItems[key] ? "checked-text" : ""}>
+                            {basic}
+                          </span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -419,9 +466,22 @@
                 <div className="home-item">
                   <div className="home-item-label">Anchors</div>
                   <div className="basics-list">
-                    {homeToday.homeAnchors.map((anchor, i) => (
-                      <span className="basic-tag" key={i}>{anchor}</span>
-                    ))}
+                    {homeToday.homeAnchors.map((anchor, i) => {
+                      const key = `anchor-${todayKey}-${anchor}`;
+
+                      return (
+                        <label className="basic-tag check-row" key={key}>
+                          <input
+                            type="checkbox"
+                            checked={!!checkedItems[key]}
+                            onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
+                          />
+                          <span className={checkedItems[key] ? "checked-text" : ""}>
+                            {anchor}
+                          </span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -460,14 +520,29 @@
                 {todayOnly ? "Tasks due today" : "Tasks due this week"}
               </p>
 
-              {visibleTasks.map((task, i) => (
-                <div className="task-item" key={i}>
-                  <div>{task.name}</div>
-                  <div className="task-priority">
-                    {task.priority} • {task.dueDate}
+              {visibleTasks.map((task, i) => {
+                const key = `task-${todayKey}-${task.id || task.name}-${task.dueDate}`;
+
+                return (
+                  <div className="task-item" key={key}>
+                    <label className="check-row">
+                      <input
+                        type="checkbox"
+                        checked={!!checkedItems[key]}
+                        onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
+                      />
+                      <div>
+                        <div className={checkedItems[key] ? "checked-text" : ""}>
+                          {task.name}
+                        </div>
+                        <div className="task-priority">
+                          {task.priority} • {task.dueDate}
+                        </div>
+                      </div>
+                    </label>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </>
           ) : (
             <p style={{ color: "var(--muted)", fontSize: "13px" }}>
