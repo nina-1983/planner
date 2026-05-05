@@ -21,14 +21,40 @@ export default async function handler(req, res) {
     "Content-Type": "application/json",
   };
 
+  const now = new Date();
+  const day = now.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  monday.setHours(0, 0, 0, 0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+
+  const weekStart = monday.toISOString().split("T")[0];
+  const weekEnd = sunday.toISOString().split("T")[0];
+
   try {
-    // ✅ TASKS
     const tasksResponse = await fetch(
       "https://api.notion.com/v1/databases/31bc1adacbe7802dac64dc95609a9496/query",
       {
         method: "POST",
         headers,
         body: JSON.stringify({
+          filter: {
+            and: [
+              {
+                property: "Due Date",
+                date: { on_or_after: weekStart },
+              },
+              {
+                property: "Due Date",
+                date: { on_or_before: weekEnd },
+              },
+            ],
+          },
           sorts: [{ property: "Due Date", direction: "ascending" }],
         }),
       }
@@ -50,7 +76,6 @@ export default async function handler(req, res) {
       status: page.properties.Status?.status?.name || "",
     }));
 
-    // ✅ CLIENTS (FILTERED)
     const clientsResponse = await fetch(
       "https://api.notion.com/v1/databases/323c1adacbe780648916df44ef5a8465/query",
       {
@@ -84,13 +109,10 @@ export default async function handler(req, res) {
 
     const clientFocus = (clientsData.results || []).map((page) => ({
       client: page.properties.Clients?.title?.[0]?.plain_text || "Unknown",
-      focus:
-        page.properties["This Week Focus"]?.rich_text?.[0]?.plain_text || "",
-      nextStep:
-        page.properties["Next Step"]?.rich_text?.[0]?.plain_text || "",
+      focus: page.properties["This Week Focus"]?.rich_text?.[0]?.plain_text || "",
+      nextStep: page.properties["Next Step"]?.rich_text?.[0]?.plain_text || "",
     }));
 
-    // ✅ HOME
     const today = new Date().toISOString().split("T")[0];
 
     const homeResponse = await fetch(
@@ -119,20 +141,15 @@ export default async function handler(req, res) {
     const homeToday = homeData.results?.[0]
       ? {
           mealPlan:
-            homeData.results[0].properties["Meal Plan"]?.rich_text?.[0]
-              ?.plain_text || "",
+            homeData.results[0].properties["Meal Plan"]?.rich_text?.[0]?.plain_text || "",
           movement:
             homeData.results[0].properties.Movement?.select?.name || "",
           energyNote:
             homeData.results[0].properties["Energy Note"]?.select?.name || "",
           dailyBasics:
-            homeData.results[0].properties["Daily Basics"]?.multi_select?.map(
-              (s) => s.name
-            ) || [],
+            homeData.results[0].properties["Daily Basics"]?.multi_select?.map((s) => s.name) || [],
           homeAnchors:
-            homeData.results[0].properties["Home Anchor"]?.multi_select?.map(
-              (s) => s.name
-            ) || [],
+            homeData.results[0].properties["Home Anchor"]?.multi_select?.map((s) => s.name) || [],
         }
       : {};
 
@@ -140,6 +157,8 @@ export default async function handler(req, res) {
       weekTasks,
       clientFocus,
       homeToday,
+      weekStart,
+      weekEnd,
     });
   } catch (error) {
     return res.status(500).json({
