@@ -28,7 +28,7 @@ export default async function handler(req, res) {
   try {
     // ✅ UPDATED My Tasks DB ID (this is the key fix)
     const tasksResponse = await fetch(
-      "https://api.notion.com/v1/databases/325c1adacbe780dd883ef6b16f3b5855/query",
+      "https://api.notion.com/v1/databases/31bc1adacbe7802dac64dc95609a9496/query",
       {
         method: "POST",
         headers,
