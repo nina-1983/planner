@@ -294,20 +294,40 @@
 }}
 
     textarea {
-      width: 100%;
-      background: var(--cream);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13.5px;
-      color: var(--warm-brown);
-      outline: none;
-      resize: none;
-    }
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  background: var(--cream);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--warm-brown);
+  outline: none;
+  resize: vertical;
+  box-shadow: none;
+}
 
-    .brain-textarea { min-height: 160px; }
-    .notes-textarea { min-height: 110px; }
+textarea::placeholder {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+textarea:focus {
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(138, 158, 138, 0.12);
+}
+
+.brain-textarea {
+  min-height: 160px;
+}
+
+.notes-textarea {
+  min-height: 110px;
+}
 
     @media(max-width: 700px) {
       .home-grid,
