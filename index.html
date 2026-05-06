@@ -250,44 +250,48 @@
       opacity: 0.55;
     }
 
-    .reset-card {
-      background: rgba(253, 250, 247, 0.92);
-      border: 1px solid rgba(196,154,138,0.22);
-    }
+    ..reset-card {
+  padding: 20px 22px;
+}
 
-    .reset-intro {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin: -6px 0 16px;
-    }
+.reset-card .card-title {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+}
 
-    .reset-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+.reset-intro {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
 
-    .reset-item {
-      background: var(--cream);
-      border-radius: 14px;
-      padding: 11px 12px;
-    }
+.reset-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 
-    .reset-item label {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      cursor: pointer;
-      font-size: 13px;
-      line-height: 1.35;
-    }
+.reset-item {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 10px;
+}
 
-    .reset-item input {
-      margin-top: 1px;
-      accent-color: var(--sage);
-      cursor: pointer;
-    }
+.reset-item label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.reset-item input {
+  margin: 0;
+  accent-color: var(--sage);
+}}
 
     textarea {
       width: 100%;
