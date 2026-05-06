@@ -114,7 +114,12 @@ export default async function handler(req, res) {
       nextStep: page.properties["Next Step"]?.rich_text?.[0]?.plain_text || "",
     }));
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/London",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(new Date());;
 
     const homeResponse = await fetch(
       "https://api.notion.com/v1/databases/dd7ba18f385d407c977d1eb47f0671f2/query",
