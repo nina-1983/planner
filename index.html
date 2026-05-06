@@ -133,11 +133,6 @@
       margin-bottom: 16px;
     }
 
-    .sync-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
     .sync-indicator {
       font-size: 11px;
       color: var(--sage);
@@ -156,8 +151,8 @@
     .card-title {
       font-family: 'Playfair Display', serif;
       font-size: 18px;
-      margin-bottom: 18px;
-      padding-bottom: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
 
@@ -177,26 +172,15 @@
       margin-bottom: 8px;
     }
 
+    .client-item {
+      border-left: 3px solid var(--dusty-rose);
+    }
+
     .task-priority {
       font-size: 10px;
       color: var(--muted);
       margin-top: 4px;
       text-transform: uppercase;
-    }
-
-    .client-item {
-      border-left: 3px solid var(--dusty-rose);
-    }
-
-    .client-name {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .client-focus {
-      font-size: 12px;
-      color: var(--muted);
     }
 
     .home-grid {
@@ -228,7 +212,7 @@
       background: var(--sage);
       color: white;
       padding: 5px 8px;
-      border-radius: 6px;
+      border-radius: 999px;
       font-size: 10px;
     }
 
@@ -250,88 +234,81 @@
       opacity: 0.55;
     }
 
-    ..reset-card {
-  padding: 20px 22px;
-}
+    .reset-card {
+      padding: 20px 22px;
+    }
 
-.reset-card .card-title {
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-}
+    .reset-intro {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
 
-.reset-intro {
-  color: var(--muted);
-  font-size: 12.5px;
-  line-height: 1.45;
-  margin-bottom: 12px;
-}
+    .reset-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
 
-.reset-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
+    .reset-item {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 10px;
+    }
 
-.reset-item {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 7px 10px;
-}
+    .reset-item label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1.2;
+    }
 
-.reset-item label {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  font-size: 12px;
-  line-height: 1.2;
-}
+    .reset-item input {
+      margin: 0;
+      accent-color: var(--sage);
+    }
 
-.reset-item input {
-  margin: 0;
-  accent-color: var(--sage);
-}}
+    textarea,
+    .brain-textarea,
+    .notes-textarea {
+      appearance: none;
+      -webkit-appearance: none;
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--warm-brown);
+      outline: none;
+      resize: vertical;
+      box-shadow: none;
+    }
 
-    textarea {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  background: var(--cream);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 14px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--warm-brown);
-  outline: none;
-  resize: vertical;
-  box-shadow: none;
-}
+    textarea::placeholder {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--muted);
+      opacity: 0.65;
+    }
 
-textarea::placeholder {
-  font-family: 'DM Sans', sans-serif;
-  color: var(--muted);
-  opacity: 0.75;
-}
+    textarea:focus {
+      border-color: var(--sage);
+      box-shadow: 0 0 0 3px rgba(138, 158, 138, 0.12);
+    }
 
-textarea:focus {
-  border-color: var(--sage);
-  box-shadow: 0 0 0 3px rgba(138, 158, 138, 0.12);
-}
-
-.brain-textarea {
-  min-height: 160px;
-}
-
-.notes-textarea {
-  min-height: 110px;
-}
+    .brain-textarea { min-height: 160px; }
+    .notes-textarea { min-height: 110px; }
 
     @media(max-width: 700px) {
-      .home-grid,
-      .reset-list {
+      .home-grid {
         grid-template-columns: 1fr;
       }
 
@@ -343,197 +320,198 @@ textarea:focus {
 </head>
 
 <body>
-  <div id="root"></div>
+<div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+<script type="text/babel">
+const { useState, useEffect } = React;
 
-    const quotes = [
-      "One thing at a time. Everything else can wait.",
-      "Small moves. Steady pace. Real results.",
-      "You don't need more hours — you need clearer priorities.",
-      "Build the day before it builds itself.",
-      "Slow is smooth. Smooth is fast.",
-    ];
+const quotes = [
+  "One thing at a time. Everything else can wait.",
+  "Small moves. Steady pace. Real results.",
+  "You don't need more hours — you need clearer priorities.",
+  "Build the day before it builds itself.",
+  "Slow is smooth. Smooth is fast.",
+];
 
-    const resetCore = [
-      "Drink water before anything else",
-      "Open the curtains or get some daylight",
-      "Brain dump before checking too much",
-      "Move your body for 2 minutes",
-      "Choose one main focus for today",
-    ];
+const resetCore = [
+  "Drink water before anything else",
+  "Open the curtains",
+  "Brain dump before scrolling",
+  "Move your body",
+  "Choose one main focus"
+];
 
-    const resetRotating = [
-      "Resist doomscrolling for the first 30 minutes",
-      "Tidy one tiny space",
-      "Put on a morning playlist",
-      "Step outside for fresh air",
-      "Write down one thing you’re looking forward to",
-      "Check in with your energy levels",
-      "Empty one mental tab",
-      "Stretch your shoulders",
-      "Take three slow breaths",
-      "Make your first task smaller",
-      "Leave one thing until later without guilt",
-      "Do a tiny reset before you start work",
-      "Put something away that has been annoying you",
-      "Ask yourself: what do I actually need today?",
-    ];
+const resetRotating = [
+  "Step outside for fresh air",
+  "Stretch your shoulders",
+  "Tidy one tiny space",
+  "Take three slow breaths",
+  "Put music on",
+  "Check in with your energy",
+  "Write one thing you're looking forward to"
+];
 
-    function load(key, fallback) {
-      try {
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-      } catch {
-        return fallback;
+function load(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function priorityRank(priority) {
+  if (!priority) return 99;
+  if (priority.includes("🔴")) return 1;
+  if (priority.includes("🟡")) return 2;
+  if (priority.includes("🟢")) return 3;
+  return 99;
+}
+
+function PlannerDashboard() {
+  const today = new Date();
+
+  const todayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/London",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(today);
+
+  const todayStr = today.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const todayName = today.toLocaleDateString("en-GB", {
+    weekday: "long",
+  });
+
+  const isWeekend = today.getDay() === 0 || today.getDay() === 6;
+
+  const [brainDump, setBrainDump] = useState(() => load("planner_brainDump", ""));
+  const [notes, setNotes] = useState(() => load("planner_notes", ""));
+  const [checkedItems, setCheckedItems] = useState(() =>
+    load(`planner_checkedItems_${todayKey}`, {})
+  );
+
+  const [todayOnly, setTodayOnly] = useState(false);
+  const [showWorkWeekend, setShowWorkWeekend] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [synced, setSynced] = useState(false);
+  const [error, setError] = useState("");
+
+  const [notionData, setNotionData] = useState(() =>
+    load("planner_notionData", {
+      weekTasks: [],
+      clientFocus: [],
+      homeToday: {},
+    })
+  );
+
+  useEffect(() => {
+    localStorage.setItem("planner_brainDump", JSON.stringify(brainDump));
+  }, [brainDump]);
+
+  useEffect(() => {
+    localStorage.setItem("planner_notes", JSON.stringify(notes));
+  }, [notes]);
+
+  useEffect(() => {
+    localStorage.setItem(`planner_checkedItems_${todayKey}`, JSON.stringify(checkedItems));
+  }, [checkedItems]);
+
+  const toggleChecked = (key) => {
+    setCheckedItems({
+      ...checkedItems,
+      [key]: !checkedItems[key],
+    });
+  };
+
+  const handleSync = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Sync failed");
       }
+
+      setNotionData(data);
+      localStorage.setItem("planner_notionData", JSON.stringify(data));
+
+      setSynced(true);
+      setTimeout(() => setSynced(false), 2000);
+    } catch (err) {
+      setError(err.message);
     }
 
-    function priorityRank(priority) {
-      if (!priority) return 99;
-      if (priority.includes("🔴") || priority.toLowerCase().includes("high")) return 1;
-      if (priority.includes("🟡") || priority.toLowerCase().includes("medium")) return 2;
-      if (priority.includes("🟢") || priority.toLowerCase().includes("low")) return 3;
-      return 99;
-    }
+    setLoading(false);
+  };
 
-    function toggleChecked(key, checkedItems, setCheckedItems) {
-      setCheckedItems({
-        ...checkedItems,
-        [key]: !checkedItems[key],
-      });
-    }
+  const { weekTasks = [], clientFocus = [], homeToday = {} } = notionData;
 
-    function getDailyResetPrompts(today) {
-      const seed = today.getFullYear() + today.getMonth() + today.getDate();
+  const sortedTasks = [...weekTasks].sort((a, b) => {
+    const priorityDiff = priorityRank(a.priority) - priorityRank(b.priority);
+    if (priorityDiff !== 0) return priorityDiff;
 
-      const rotated = [...resetRotating]
-        .sort((a, b) => {
-          const aVal = a.charCodeAt(0) + a.length + seed;
-          const bVal = b.charCodeAt(0) + b.length + seed;
-          return (aVal % 13) - (bVal % 13);
-        })
-        .slice(0, 3);
+    return new Date(a.dueDate || "9999-12-31") -
+      new Date(b.dueDate || "9999-12-31");
+  });
 
-      return [...resetCore, ...rotated];
-    }
+  const todaysTasks = sortedTasks.filter((task) => {
+    if (!task.dueDate) return false;
+    return new Date(task.dueDate).toDateString() === today.toDateString();
+  });
 
-    function PlannerDashboard() {
-      const today = new Date();
-      const isWeekend = today.getDay() === 0 || today.getDay() === 6;
+  const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
 
-      const todayKey = today.toISOString().split("T")[0];
+  const resetPrompts = [
+    ...resetCore,
+    ...resetRotating.slice(today.getDay() % resetRotating.length, (today.getDay() % resetRotating.length) + 2)
+  ];
 
-      const todayStr = today.toLocaleDateString("en-GB", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
+  return (
+    <div className="planner">
+      <div className="inner">
 
-      const todayName = today.toLocaleDateString("en-GB", {
-        weekday: "long",
-      });
+        <header className="header">
+          <div>
+            <p className="header-date">{todayStr}</p>
+            <h1 className="header-title">My Planner Dashboard</h1>
+            <p className="header-quote">
+              {quotes[today.getDay() % quotes.length]}
+            </p>
+          </div>
 
-      const todayQuote = quotes[today.getDay() % quotes.length];
-      const resetPrompts = getDailyResetPrompts(today);
+          <div className="header-right">
+            <button className="sync-button" onClick={handleSync}>
+              {loading ? "Syncing..." : "Sync Notion"}
+            </button>
 
-      const [brainDump, setBrainDump] = useState(() => load("planner_brainDump", ""));
-      const [notes, setNotes] = useState(() => load("planner_notes", ""));
-      const [synced, setSynced] = useState(false);
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState("");
-      const [todayOnly, setTodayOnly] = useState(false);
-      const [showWorkWeekend, setShowWorkWeekend] = useState(false);
+            {synced && <span className="sync-indicator">✓ synced</span>}
+            {error && <div className="error-message">{error}</div>}
+          </div>
+        </header>
 
-      const [checkedItems, setCheckedItems] = useState(() =>
-        load(`planner_checkedItems_${todayKey}`, {})
-      );
-
-      const [notionData, setNotionData] = useState(() =>
-        load("planner_notionData", {
-          weekTasks: [],
-          clientFocus: [],
-          homeToday: {},
-        })
-      );
-
-      useEffect(() => {
-        localStorage.setItem("planner_brainDump", JSON.stringify(brainDump));
-      }, [brainDump]);
-
-      useEffect(() => {
-        localStorage.setItem("planner_notes", JSON.stringify(notes));
-      }, [notes]);
-
-      useEffect(() => {
-        localStorage.setItem("planner_notionData", JSON.stringify(notionData));
-      }, [notionData]);
-
-      useEffect(() => {
-        localStorage.setItem(`planner_checkedItems_${todayKey}`, JSON.stringify(checkedItems));
-      }, [checkedItems]);
-
-      const handleSync = async () => {
-        setLoading(true);
-        setError("");
-
-        try {
-          const response = await fetch("/api/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-          });
-
-          const text = await response.text();
-          let data;
-
-          try {
-            data = JSON.parse(text);
-          } catch {
-            throw new Error("API route is not returning JSON.");
-          }
-
-          if (!response.ok) {
-            throw new Error(data.error || "Sync failed");
-          }
-
-          setNotionData(data);
-          setSynced(true);
-          setTimeout(() => setSynced(false), 2000);
-        } catch (error) {
-          setError(error.message || "Notion sync failed");
-        }
-
-        setLoading(false);
-      };
-
-      const { weekTasks = [], clientFocus = [], homeToday = {} } = notionData;
-
-      const sortedTasks = [...weekTasks].sort((a, b) => {
-        const priorityDiff = priorityRank(a.priority) - priorityRank(b.priority);
-        if (priorityDiff !== 0) return priorityDiff;
-
-        return new Date(a.dueDate || "9999-12-31") - new Date(b.dueDate || "9999-12-31");
-      });
-
-      const todaysTasks = sortedTasks.filter((task) => {
-        if (!task.dueDate) return false;
-        return new Date(task.dueDate).toDateString() === today.toDateString();
-      });
-
-      const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
-
-      const TodayResetCard = () => (
         <div className="card reset-card">
           <h2 className="card-title">{todayName} Reset</h2>
 
           <p className="reset-intro">
-            Start gently. You don’t need to do everything — just come back to yourself first.
+            Start gently. You don’t need to do everything.
           </p>
 
           <div className="reset-list">
-            {resetPrompts.map((prompt, i) => {
+            {resetPrompts.map((prompt) => {
               const key = `reset-${todayKey}-${prompt}`;
 
               return (
@@ -542,7 +520,7 @@ textarea:focus {
                     <input
                       type="checkbox"
                       checked={!!checkedItems[key]}
-                      onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
+                      onChange={() => toggleChecked(key)}
                     />
                     <span className={checkedItems[key] ? "checked-text" : ""}>
                       {prompt}
@@ -553,229 +531,120 @@ textarea:focus {
             })}
           </div>
         </div>
-      );
 
-      const HomeCard = () => (
         <div className="card">
           <h2 className="card-title">Home</h2>
 
-          {Object.keys(homeToday).length > 0 ? (
-            <div className="home-grid">
-              {homeToday.mealPlan && (
-                <div className="home-item">
-                  <div className="home-item-label">Meal plan</div>
-                  <div className="home-item-value">{homeToday.mealPlan}</div>
-                </div>
-              )}
-
-              {homeToday.movement && (
-                <div className="home-item">
-                  <div className="home-item-label">Movement</div>
-                  <div className="home-item-value">{homeToday.movement}</div>
-                </div>
-              )}
-
-              {homeToday.energyNote && (
-                <div className="home-item">
-                  <div className="home-item-label">Energy</div>
-                  <div className="home-item-value">{homeToday.energyNote}</div>
-                </div>
-              )}
-
-              {homeToday.dailyBasics?.length > 0 && (
-                <div className="home-item">
-                  <div className="home-item-label">Daily basics</div>
-                  <div className="basics-list">
-                    {homeToday.dailyBasics.map((basic) => {
-                      const key = `basic-${todayKey}-${basic}`;
-
-                      return (
-                        <label className="basic-tag check-row" key={key}>
-                          <input
-                            type="checkbox"
-                            checked={!!checkedItems[key]}
-                            onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
-                          />
-                          <span className={checkedItems[key] ? "checked-text" : ""}>
-                            {basic}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {homeToday.homeAnchors?.length > 0 && (
-                <div className="home-item">
-                  <div className="home-item-label">Anchors</div>
-                  <div className="basics-list">
-                    {homeToday.homeAnchors.map((anchor) => {
-                      const key = `anchor-${todayKey}-${anchor}`;
-
-                      return (
-                        <label className="basic-tag check-row" key={key}>
-                          <input
-                            type="checkbox"
-                            checked={!!checkedItems[key]}
-                            onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
-                          />
-                          <span className={checkedItems[key] ? "checked-text" : ""}>
-                            {anchor}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <p style={{ color: "var(--muted)", fontSize: "13px" }}>
-              No home data yet. Hit Sync Notion.
-            </p>
-          )}
-        </div>
-      );
-
-      const WorkCard = () => (
-        <div className="card">
-          <h2 className="card-title">Work</h2>
-
-          <div className="toggle-row">
-            <button
-              className={`toggle-button ${!todayOnly ? "active" : ""}`}
-              onClick={() => setTodayOnly(false)}
-            >
-              This week
-            </button>
-
-            <button
-              className={`toggle-button ${todayOnly ? "active" : ""}`}
-              onClick={() => setTodayOnly(true)}
-            >
-              Today only
-            </button>
-          </div>
-
-          {visibleTasks.length > 0 ? (
-            <>
-              <p className="section-label">
-                {todayOnly ? "Tasks due today" : "Tasks due this week"}
-              </p>
-
-              {visibleTasks.map((task) => {
-                const key = `task-${todayKey}-${task.id || task.name}-${task.dueDate}`;
-
-                return (
-                  <div className="task-item" key={key}>
-                    <label className="check-row">
-                      <input
-                        type="checkbox"
-                        checked={!!checkedItems[key]}
-                        onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
-                      />
-                      <div>
-                        <div className={checkedItems[key] ? "checked-text" : ""}>
-                          {task.name}
-                        </div>
-                        <div className="task-priority">
-                          {task.priority} • {task.dueDate}
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-                );
-              })}
-            </>
-          ) : (
-            <p style={{ color: "var(--muted)", fontSize: "13px" }}>
-              {todayOnly ? "No tasks due today." : "No tasks due this week."}
-            </p>
-          )}
-
-          {clientFocus.length > 0 && (
-            <>
-              <p className="section-label">Client focus</p>
-
-              {clientFocus.map((item, i) => (
-                <div className="client-item" key={i}>
-                  <div className="client-name">{item.client}</div>
-                  {item.focus && <div className="client-focus">{item.focus}</div>}
-                  {item.nextStep && (
-                    <div className="client-focus">Next: {item.nextStep}</div>
-                  )}
-                </div>
-              ))}
-            </>
-          )}
-        </div>
-      );
-
-      return (
-        <div className="planner">
-          <div className="inner">
-            <header className="header">
-              <div>
-                <p className="header-date">{todayStr}</p>
-                <h1 className="header-title">My Planner Dashboard</h1>
-                <p className="header-quote">{todayQuote}</p>
+          <div className="home-grid">
+            {homeToday.mealPlan && (
+              <div className="home-item">
+                <div className="home-item-label">Meal plan</div>
+                <div className="home-item-value">{homeToday.mealPlan}</div>
               </div>
-
-              <div className="header-right">
-                <button className="sync-button" onClick={handleSync} disabled={loading}>
-                  {loading ? "Syncing..." : "Sync Notion"}
-                </button>
-
-                {synced && <span className="sync-indicator">✓ synced</span>}
-                {error && <div className="error-message">{error}</div>}
-              </div>
-            </header>
-
-            <TodayResetCard />
-
-            <HomeCard />
-
-            {isWeekend ? (
-              <>
-                <button
-                  className="weekend-work-button"
-                  onClick={() => setShowWorkWeekend(!showWorkWeekend)}
-                >
-                  {showWorkWeekend ? "Hide work again" : "Peek at work"}
-                </button>
-
-                {showWorkWeekend && <WorkCard />}
-              </>
-            ) : (
-              <WorkCard />
             )}
 
-            <div className="card">
-              <h2 className="card-title">Brain dump</h2>
-              <textarea
-                className="brain-textarea"
-                value={brainDump}
-                onChange={(e) => setBrainDump(e.target.value)}
-                placeholder="Get it out of your head..."
-              />
-            </div>
-
-            <div className="card">
-              <h2 className="card-title">Notes & reminders</h2>
-              <textarea
-                className="notes-textarea"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Anything you don't want to forget..."
-              />
-            </div>
+            {homeToday.movement && (
+              <div className="home-item">
+                <div className="home-item-label">Movement</div>
+                <div className="home-item-value">{homeToday.movement}</div>
+              </div>
+            )}
           </div>
         </div>
-      );
-    }
 
-    ReactDOM.render(<PlannerDashboard />, document.getElementById("root"));
-  </script>
+        {isWeekend ? (
+          <>
+            <button
+              className="weekend-work-button"
+              onClick={() => setShowWorkWeekend(!showWorkWeekend)}
+            >
+              {showWorkWeekend ? "Hide work again" : "Peek at work"}
+            </button>
+
+            {showWorkWeekend && (
+              <div className="card">
+                <h2 className="card-title">Work</h2>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="card">
+            <h2 className="card-title">Work</h2>
+
+            <div className="toggle-row">
+              <button
+                className={`toggle-button ${!todayOnly ? "active" : ""}`}
+                onClick={() => setTodayOnly(false)}
+              >
+                This week
+              </button>
+
+              <button
+                className={`toggle-button ${todayOnly ? "active" : ""}`}
+                onClick={() => setTodayOnly(true)}
+              >
+                Today only
+              </button>
+            </div>
+
+            {visibleTasks.map((task) => {
+              const key = `task-${task.id}`;
+
+              return (
+                <div className="task-item" key={key}>
+                  <label className="check-row">
+                    <input
+                      type="checkbox"
+                      checked={!!checkedItems[key]}
+                      onChange={() => toggleChecked(key)}
+                    />
+
+                    <div>
+                      <div className={checkedItems[key] ? "checked-text" : ""}>
+                        {task.name}
+                      </div>
+
+                      <div className="task-priority">
+                        {task.priority} • {task.dueDate}
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="card">
+          <h2 className="card-title">Brain dump</h2>
+
+          <textarea
+            className="brain-textarea"
+            value={brainDump}
+            onChange={(e) => setBrainDump(e.target.value)}
+            placeholder="Get it out of your head..."
+            rows="6"
+          />
+        </div>
+
+        <div className="card">
+          <h2 className="card-title">Notes & reminders</h2>
+
+          <textarea
+            className="notes-textarea"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Anything you don't want to forget..."
+            rows="4"
+          />
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<PlannerDashboard />, document.getElementById("root"));
+</script>
 </body>
 </html>
