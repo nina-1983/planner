@@ -250,6 +250,45 @@
       opacity: 0.55;
     }
 
+    .reset-card {
+      background: rgba(253, 250, 247, 0.92);
+      border: 1px solid rgba(196,154,138,0.22);
+    }
+
+    .reset-intro {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: -6px 0 16px;
+    }
+
+    .reset-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .reset-item {
+      background: var(--cream);
+      border-radius: 14px;
+      padding: 11px 12px;
+    }
+
+    .reset-item label {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .reset-item input {
+      margin-top: 1px;
+      accent-color: var(--sage);
+      cursor: pointer;
+    }
+
     textarea {
       width: 100%;
       background: var(--cream);
@@ -267,8 +306,14 @@
     .notes-textarea { min-height: 110px; }
 
     @media(max-width: 700px) {
-      .home-grid { grid-template-columns: 1fr; }
-      .header-right { align-items: flex-start; }
+      .home-grid,
+      .reset-list {
+        grid-template-columns: 1fr;
+      }
+
+      .header-right {
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -285,6 +330,31 @@
       "You don't need more hours — you need clearer priorities.",
       "Build the day before it builds itself.",
       "Slow is smooth. Smooth is fast.",
+    ];
+
+    const resetCore = [
+      "Drink water before anything else",
+      "Open the curtains or get some daylight",
+      "Brain dump before checking too much",
+      "Move your body for 2 minutes",
+      "Choose one main focus for today",
+    ];
+
+    const resetRotating = [
+      "Resist doomscrolling for the first 30 minutes",
+      "Tidy one tiny space",
+      "Put on a morning playlist",
+      "Step outside for fresh air",
+      "Write down one thing you’re looking forward to",
+      "Check in with your energy levels",
+      "Empty one mental tab",
+      "Stretch your shoulders",
+      "Take three slow breaths",
+      "Make your first task smaller",
+      "Leave one thing until later without guilt",
+      "Do a tiny reset before you start work",
+      "Put something away that has been annoying you",
+      "Ask yourself: what do I actually need today?",
     ];
 
     function load(key, fallback) {
@@ -311,6 +381,20 @@
       });
     }
 
+    function getDailyResetPrompts(today) {
+      const seed = today.getFullYear() + today.getMonth() + today.getDate();
+
+      const rotated = [...resetRotating]
+        .sort((a, b) => {
+          const aVal = a.charCodeAt(0) + a.length + seed;
+          const bVal = b.charCodeAt(0) + b.length + seed;
+          return (aVal % 13) - (bVal % 13);
+        })
+        .slice(0, 3);
+
+      return [...resetCore, ...rotated];
+    }
+
     function PlannerDashboard() {
       const today = new Date();
       const isWeekend = today.getDay() === 0 || today.getDay() === 6;
@@ -324,7 +408,12 @@
         year: "numeric",
       });
 
+      const todayName = today.toLocaleDateString("en-GB", {
+        weekday: "long",
+      });
+
       const todayQuote = quotes[today.getDay() % quotes.length];
+      const resetPrompts = getDailyResetPrompts(today);
 
       const [brainDump, setBrainDump] = useState(() => load("planner_brainDump", ""));
       const [notes, setNotes] = useState(() => load("planner_notes", ""));
@@ -411,6 +500,37 @@
 
       const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
 
+      const TodayResetCard = () => (
+        <div className="card reset-card">
+          <h2 className="card-title">{todayName} Reset</h2>
+
+          <p className="reset-intro">
+            Start gently. You don’t need to do everything — just come back to yourself first.
+          </p>
+
+          <div className="reset-list">
+            {resetPrompts.map((prompt, i) => {
+              const key = `reset-${todayKey}-${prompt}`;
+
+              return (
+                <div className="reset-item" key={key}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={!!checkedItems[key]}
+                      onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
+                    />
+                    <span className={checkedItems[key] ? "checked-text" : ""}>
+                      {prompt}
+                    </span>
+                  </label>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+
       const HomeCard = () => (
         <div className="card">
           <h2 className="card-title">Home</h2>
@@ -442,7 +562,7 @@
                 <div className="home-item">
                   <div className="home-item-label">Daily basics</div>
                   <div className="basics-list">
-                    {homeToday.dailyBasics.map((basic, i) => {
+                    {homeToday.dailyBasics.map((basic) => {
                       const key = `basic-${todayKey}-${basic}`;
 
                       return (
@@ -466,7 +586,7 @@
                 <div className="home-item">
                   <div className="home-item-label">Anchors</div>
                   <div className="basics-list">
-                    {homeToday.homeAnchors.map((anchor, i) => {
+                    {homeToday.homeAnchors.map((anchor) => {
                       const key = `anchor-${todayKey}-${anchor}`;
 
                       return (
@@ -520,7 +640,7 @@
                 {todayOnly ? "Tasks due today" : "Tasks due this week"}
               </p>
 
-              {visibleTasks.map((task, i) => {
+              {visibleTasks.map((task) => {
                 const key = `task-${todayKey}-${task.id || task.name}-${task.dueDate}`;
 
                 return (
@@ -587,6 +707,8 @@
                 {error && <div className="error-message">{error}</div>}
               </div>
             </header>
+
+            <TodayResetCard />
 
             <HomeCard />
 
