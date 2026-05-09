@@ -3,44 +3,24 @@ const DAILY_CHECKINS_DATABASE_ID = "d4bf74d2f4b649e788f20ee26758802a";
 function textProperty(value) {
   return {
     rich_text: value
-      ? [
-          {
-            text: {
-              content: String(value),
-            },
-          },
-        ]
+      ? [{ text: { content: String(value).slice(0, 1900) } }]
       : [],
   };
 }
 
 function checkboxProperty(value) {
-  return {
-    checkbox: !!value,
-  };
+  return { checkbox: !!value };
 }
 
 function numberProperty(value) {
   const number =
-    value === "" || value === null || value === undefined
-      ? null
-      : Number(value);
+    value === "" || value === null || value === undefined ? null : Number(value);
 
-  return {
-    number: Number.isFinite(number) ? number : null,
-  };
+  return { number: Number.isFinite(number) ? number : null };
 }
 
 function selectProperty(value) {
-  return value
-    ? {
-        select: {
-          name: String(value),
-        },
-      }
-    : {
-        select: null,
-      };
+  return value ? { select: { name: String(value) } } : { select: null };
 }
 
 async function notionRequest(url, options, headers) {
@@ -49,15 +29,21 @@ async function notionRequest(url, options, headers) {
     headers,
   });
 
-  const data = await response.json();
+  const text = await response.text();
+
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(`Notion returned non-JSON response: ${text.slice(0, 300)}`);
+  }
 
   if (!response.ok) {
-    const message =
+    throw new Error(
       data?.message ||
-      data?.error ||
-      `Notion request failed with status ${response.status}`;
-
-    throw new Error(message);
+        data?.error ||
+        `Notion request failed with status ${response.status}`
+    );
   }
 
   return data;
@@ -68,7 +54,9 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method === "OPTIONS") {
+    return res.status(200).json({ ok: true });
+  }
 
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -98,18 +86,10 @@ export default async function handler(req, res) {
 
     const properties = {
       Name: {
-        title: [
-          {
-            text: {
-              content: title,
-            },
-          },
-        ],
+        title: [{ text: { content: title } }],
       },
       Date: {
-        date: {
-          start: date,
-        },
+        date: { start: date },
       },
       "Main Focus": textProperty(body.mainFocus),
       "Next Right Step": textProperty(body.nextRightStep),
@@ -139,9 +119,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           filter: {
             property: "Date",
-            date: {
-              equals: date,
-            },
+            date: { equals: date },
           },
           page_size: 1,
         }),
@@ -156,9 +134,7 @@ export default async function handler(req, res) {
         `https://api.notion.com/v1/pages/${pageId}`,
         {
           method: "PATCH",
-          body: JSON.stringify({
-            properties,
-          }),
+          body: JSON.stringify({ properties }),
         },
         headers
       );
@@ -175,9 +151,7 @@ export default async function handler(req, res) {
       {
         method: "POST",
         body: JSON.stringify({
-          parent: {
-            database_id: DAILY_CHECKINS_DATABASE_ID,
-          },
+          parent: { database_id: DAILY_CHECKINS_DATABASE_ID },
           properties,
         }),
       },
@@ -192,7 +166,7 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(500).json({
       error: "Check-in save failed",
-      details: error.message,
+      details: error.message || String(error),
     });
   }
 }
