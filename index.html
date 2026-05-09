@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Daily Planner</title>
+  <title>My Planner Dashboard</title>
 
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -627,351 +627,363 @@
 
       const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
 
-      const TodayCard = () => (
-        <div className="card">
-          <h2 className="card-title">Today</h2>
-          <p className="gentle-copy">
-            Don’t plan the whole life. Just choose the day.
-          </p>
+      function renderTodayCard() {
+        return (
+          <div className="card">
+            <h2 className="card-title">Today</h2>
+            <p className="gentle-copy">
+              Don’t plan the whole life. Just choose the day.
+            </p>
 
-          <div className="grid-2">
-            <div className="field">
-              <label>Main focus</label>
-              <input
-                type="text"
-                value={checkin.mainFocus}
-                onChange={(e) => updateCheckin("mainFocus", e.target.value)}
-                placeholder="What matters most today?"
-              />
-            </div>
-
-            <div className="field">
-              <label>Next right step</label>
-              <input
-                type="text"
-                value={checkin.nextRightStep}
-                onChange={(e) => updateCheckin("nextRightStep", e.target.value)}
-                placeholder="What is the next tiny action?"
-              />
-            </div>
-          </div>
-
-          <div className="grid-3" style={{ marginTop: "12px" }}>
-            <div className="field">
-              <label>One me thing</label>
-              <input
-                type="text"
-                value={checkin.oneMeThing}
-                onChange={(e) => updateCheckin("oneMeThing", e.target.value)}
-                placeholder="e.g. walk, shower, quiet time"
-              />
-            </div>
-
-            <div className="field">
-              <label>One home thing</label>
-              <input
-                type="text"
-                value={checkin.oneHomeThing}
-                onChange={(e) => updateCheckin("oneHomeThing", e.target.value)}
-                placeholder="e.g. clear sofa, laundry, kitchen reset"
-              />
-            </div>
-
-            <div className="field">
-              <label>One work thing</label>
-              <input
-                type="text"
-                value={checkin.oneWorkThing}
-                onChange={(e) => updateCheckin("oneWorkThing", e.target.value)}
-                placeholder="e.g. challenge page, client task"
-              />
-            </div>
-          </div>
-        </div>
-      );
-
-      const BodyAnchorsCard = () => (
-        <div className="card">
-          <h2 className="card-title">Body Anchors</h2>
-          <p className="gentle-copy">
-            This is the foundation. These are not extras — they are what help you feel like you.
-          </p>
-
-          <div className="grid-2">
-            <div className="field">
-              <label>Mood</label>
-              <select
-                value={checkin.mood}
-                onChange={(e) => updateCheckin("mood", e.target.value)}
-              >
-                <option>Calm</option>
-                <option>Okay</option>
-                <option>Foggy</option>
-                <option>Anxious</option>
-                <option>Overwhelmed</option>
-              </select>
-            </div>
-
-            <div className="field">
-              <label>Energy 1–10</label>
-              <input
-                type="number"
-                min="1"
-                max="10"
-                value={checkin.energy}
-                onChange={(e) => updateCheckin("energy", e.target.value)}
-                placeholder="1-10"
-              />
-            </div>
-          </div>
-
-          <div className="anchor-grid" style={{ marginTop: "16px" }}>
-            {bodyAnchors.map((anchor) => (
-              <div className="anchor-item" key={anchor.key}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={!!checkin[anchor.key]}
-                    onChange={() => updateCheckin(anchor.key, !checkin[anchor.key])}
-                  />
-                  <span className={checkin[anchor.key] ? "checked-text" : ""}>
-                    {anchor.label}
-                  </span>
-                </label>
+            <div className="grid-2">
+              <div className="field">
+                <label>Main focus</label>
+                <input
+                  type="text"
+                  value={checkin.mainFocus}
+                  onChange={(e) => updateCheckin("mainFocus", e.target.value)}
+                  placeholder="What matters most today?"
+                />
               </div>
-            ))}
-          </div>
-        </div>
-      );
 
-      const OpenLoopsCard = () => (
-        <div className="card">
-          <h2 className="card-title">Open Loops</h2>
-          <p className="gentle-copy">
-            Get it out of your head. This is not a performance list — it’s a pressure valve. Use Wispr Flow here if talking is easier.
-          </p>
-
-          <textarea
-            className="brain-textarea"
-            value={checkin.openLoops}
-            onChange={(e) => updateCheckin("openLoops", e.target.value)}
-            placeholder="Pay Sammy, book dog groomer, sew badge, check credit card..."
-            rows="6"
-          />
-        </div>
-      );
-
-      const HomeCard = () => (
-        <div className="card">
-          <h2 className="card-title">Home</h2>
-
-          {Object.keys(homeToday).length > 0 ? (
-            <div className="home-grid">
-              {homeToday.mealPlan && (
-                <div className="home-item">
-                  <div className="home-item-label">Meal plan</div>
-                  <div className="home-item-value">{homeToday.mealPlan}</div>
-                </div>
-              )}
-
-              {homeToday.movement && (
-                <div className="home-item">
-                  <div className="home-item-label">Movement</div>
-                  <div className="home-item-value">{homeToday.movement}</div>
-                </div>
-              )}
-
-              {homeToday.energyNote && (
-                <div className="home-item">
-                  <div className="home-item-label">Energy</div>
-                  <div className="home-item-value">{homeToday.energyNote}</div>
-                </div>
-              )}
-
-              {homeToday.dailyBasics?.length > 0 && (
-                <div className="home-item">
-                  <div className="home-item-label">Daily basics</div>
-                  <div className="basics-list">
-                    {homeToday.dailyBasics.map((basic) => {
-                      const key = `basic-${todayKey}-${basic}`;
-
-                      return (
-                        <label className="basic-tag check-row" key={key}>
-                          <input
-                            type="checkbox"
-                            checked={!!checkedItems[key]}
-                            onChange={() => toggleChecked(key)}
-                          />
-                          <span className={checkedItems[key] ? "checked-text" : ""}>
-                            {basic}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {homeToday.homeAnchors?.length > 0 && (
-                <div className="home-item">
-                  <div className="home-item-label">Anchors</div>
-                  <div className="basics-list">
-                    {homeToday.homeAnchors.map((anchor) => {
-                      const key = `anchor-${todayKey}-${anchor}`;
-
-                      return (
-                        <label className="basic-tag check-row" key={key}>
-                          <input
-                            type="checkbox"
-                            checked={!!checkedItems[key]}
-                            onChange={() => toggleChecked(key)}
-                          />
-                          <span className={checkedItems[key] ? "checked-text" : ""}>
-                            {anchor}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+              <div className="field">
+                <label>Next right step</label>
+                <input
+                  type="text"
+                  value={checkin.nextRightStep}
+                  onChange={(e) => updateCheckin("nextRightStep", e.target.value)}
+                  placeholder="What is the next tiny action?"
+                />
+              </div>
             </div>
-          ) : (
-            <p className="small-note">
-              No home data yet. Hit Pull Notion.
-            </p>
-          )}
-        </div>
-      );
 
-      const WorkCard = () => (
-        <div className="card">
-          <h2 className="card-title">Work</h2>
+            <div className="grid-3" style={{ marginTop: "12px" }}>
+              <div className="field">
+                <label>One me thing</label>
+                <input
+                  type="text"
+                  value={checkin.oneMeThing}
+                  onChange={(e) => updateCheckin("oneMeThing", e.target.value)}
+                  placeholder="e.g. walk, shower, quiet time"
+                />
+              </div>
 
-          <div className="toggle-row">
-            <button
-              type="button"
-              className={`toggle-button ${!todayOnly ? "active" : ""}`}
-              onClick={() => setTodayOnly(false)}
-            >
-              This week
-            </button>
+              <div className="field">
+                <label>One home thing</label>
+                <input
+                  type="text"
+                  value={checkin.oneHomeThing}
+                  onChange={(e) => updateCheckin("oneHomeThing", e.target.value)}
+                  placeholder="e.g. clear sofa, laundry, kitchen reset"
+                />
+              </div>
 
-            <button
-              type="button"
-              className={`toggle-button ${todayOnly ? "active" : ""}`}
-              onClick={() => setTodayOnly(true)}
-            >
-              Today only
-            </button>
+              <div className="field">
+                <label>One work thing</label>
+                <input
+                  type="text"
+                  value={checkin.oneWorkThing}
+                  onChange={(e) => updateCheckin("oneWorkThing", e.target.value)}
+                  placeholder="e.g. challenge page, client task"
+                />
+              </div>
+            </div>
           </div>
+        );
+      }
 
-          {visibleTasks.length > 0 ? (
-            <>
-              <p className="section-label">
-                {todayOnly ? "Tasks due today" : "Tasks due this week"}
-              </p>
-
-              {visibleTasks.map((task) => {
-                const key = `task-${todayKey}-${task.id || task.name}-${task.dueDate}`;
-
-                return (
-                  <div className="task-item" key={key}>
-                    <label className="check-row">
-                      <input
-                        type="checkbox"
-                        checked={!!checkedItems[key]}
-                        onChange={() => toggleChecked(key)}
-                      />
-                      <div>
-                        <div className={checkedItems[key] ? "checked-text" : ""}>
-                          {task.name}
-                        </div>
-                        <div className="task-priority">
-                          {task.priority} • {task.dueDate}
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-                );
-              })}
-            </>
-          ) : (
-            <p className="small-note">
-              {todayOnly ? "No tasks due today." : "No tasks due this week."}
+      function renderBodyAnchorsCard() {
+        return (
+          <div className="card">
+            <h2 className="card-title">Body Anchors</h2>
+            <p className="gentle-copy">
+              This is the foundation. These are not extras — they are what help you feel like you.
             </p>
-          )}
 
-          {clientFocus.length > 0 && (
-            <>
-              <p className="section-label">Client focus</p>
+            <div className="grid-2">
+              <div className="field">
+                <label>Mood</label>
+                <select
+                  value={checkin.mood}
+                  onChange={(e) => updateCheckin("mood", e.target.value)}
+                >
+                  <option>Calm</option>
+                  <option>Okay</option>
+                  <option>Foggy</option>
+                  <option>Anxious</option>
+                  <option>Overwhelmed</option>
+                </select>
+              </div>
 
-              {clientFocus.map((item, i) => (
-                <div className="client-item" key={i}>
-                  <div className="client-name">{item.client}</div>
-                  {item.focus && <div className="client-focus">{item.focus}</div>}
-                  {item.nextStep && (
-                    <div className="client-focus">Next: {item.nextStep}</div>
-                  )}
+              <div className="field">
+                <label>Energy 1–10</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={checkin.energy}
+                  onChange={(e) => updateCheckin("energy", e.target.value)}
+                  placeholder="1-10"
+                />
+              </div>
+            </div>
+
+            <div className="anchor-grid" style={{ marginTop: "16px" }}>
+              {bodyAnchors.map((anchor) => (
+                <div className="anchor-item" key={anchor.key}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={!!checkin[anchor.key]}
+                      onChange={() => updateCheckin(anchor.key, !checkin[anchor.key])}
+                    />
+                    <span className={checkin[anchor.key] ? "checked-text" : ""}>
+                      {anchor.label}
+                    </span>
+                  </label>
                 </div>
               ))}
-            </>
-          )}
-        </div>
-      );
-
-      const EveningResetCard = () => (
-        <div className="card">
-          <h2 className="card-title">Evening Reset</h2>
-          <p className="gentle-copy">
-            Close the loop gently. This is what makes the weekly check-in useful. Use Wispr Flow if talking it out is easier.
-          </p>
-
-          <div className="grid-2">
-            <div className="field">
-              <label>What worked?</label>
-              <textarea
-                className="notes-textarea"
-                value={checkin.whatWorked}
-                onChange={(e) => updateCheckin("whatWorked", e.target.value)}
-                placeholder="What helped today?"
-              />
-            </div>
-
-            <div className="field">
-              <label>What felt heavy?</label>
-              <textarea
-                className="notes-textarea"
-                value={checkin.whatFeltHeavy}
-                onChange={(e) => updateCheckin("whatFeltHeavy", e.target.value)}
-                placeholder="What drained you or felt hard?"
-              />
             </div>
           </div>
+        );
+      }
 
-          <div className="grid-2" style={{ marginTop: "12px" }}>
-            <div className="field">
-              <label>Carry forward</label>
-              <textarea
-                className="notes-textarea"
-                value={checkin.carryForward}
-                onChange={(e) => updateCheckin("carryForward", e.target.value)}
-                placeholder="What needs moving to tomorrow?"
-              />
+      function renderOpenLoopsCard() {
+        return (
+          <div className="card">
+            <h2 className="card-title">Open Loops</h2>
+            <p className="gentle-copy">
+              Get it out of your head. This is not a performance list — it’s a pressure valve. Use Wispr Flow here if talking is easier.
+            </p>
+
+            <textarea
+              className="brain-textarea"
+              value={checkin.openLoops}
+              onChange={(e) => updateCheckin("openLoops", e.target.value)}
+              placeholder="Pay Sammy, book dog groomer, sew badge, check credit card..."
+              rows="6"
+            />
+          </div>
+        );
+      }
+
+      function renderHomeCard() {
+        return (
+          <div className="card">
+            <h2 className="card-title">Home</h2>
+
+            {Object.keys(homeToday).length > 0 ? (
+              <div className="home-grid">
+                {homeToday.mealPlan && (
+                  <div className="home-item">
+                    <div className="home-item-label">Meal plan</div>
+                    <div className="home-item-value">{homeToday.mealPlan}</div>
+                  </div>
+                )}
+
+                {homeToday.movement && (
+                  <div className="home-item">
+                    <div className="home-item-label">Movement</div>
+                    <div className="home-item-value">{homeToday.movement}</div>
+                  </div>
+                )}
+
+                {homeToday.energyNote && (
+                  <div className="home-item">
+                    <div className="home-item-label">Energy</div>
+                    <div className="home-item-value">{homeToday.energyNote}</div>
+                  </div>
+                )}
+
+                {homeToday.dailyBasics?.length > 0 && (
+                  <div className="home-item">
+                    <div className="home-item-label">Daily basics</div>
+                    <div className="basics-list">
+                      {homeToday.dailyBasics.map((basic) => {
+                        const key = `basic-${todayKey}-${basic}`;
+
+                        return (
+                          <label className="basic-tag check-row" key={key}>
+                            <input
+                              type="checkbox"
+                              checked={!!checkedItems[key]}
+                              onChange={() => toggleChecked(key)}
+                            />
+                            <span className={checkedItems[key] ? "checked-text" : ""}>
+                              {basic}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {homeToday.homeAnchors?.length > 0 && (
+                  <div className="home-item">
+                    <div className="home-item-label">Anchors</div>
+                    <div className="basics-list">
+                      {homeToday.homeAnchors.map((anchor) => {
+                        const key = `anchor-${todayKey}-${anchor}`;
+
+                        return (
+                          <label className="basic-tag check-row" key={key}>
+                            <input
+                              type="checkbox"
+                              checked={!!checkedItems[key]}
+                              onChange={() => toggleChecked(key)}
+                            />
+                            <span className={checkedItems[key] ? "checked-text" : ""}>
+                              {anchor}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="small-note">
+                No home data yet. Hit Pull Notion.
+              </p>
+            )}
+          </div>
+        );
+      }
+
+      function renderWorkCard() {
+        return (
+          <div className="card">
+            <h2 className="card-title">Work</h2>
+
+            <div className="toggle-row">
+              <button
+                type="button"
+                className={`toggle-button ${!todayOnly ? "active" : ""}`}
+                onClick={() => setTodayOnly(false)}
+              >
+                This week
+              </button>
+
+              <button
+                type="button"
+                className={`toggle-button ${todayOnly ? "active" : ""}`}
+                onClick={() => setTodayOnly(true)}
+              >
+                Today only
+              </button>
             </div>
 
-            <div className="field">
-              <label>Evening notes</label>
-              <textarea
-                className="notes-textarea"
-                value={checkin.eveningNotes}
-                onChange={(e) => updateCheckin("eveningNotes", e.target.value)}
-                placeholder="Workout Witch, breathwork, tomorrow prep..."
-              />
+            {visibleTasks.length > 0 ? (
+              <>
+                <p className="section-label">
+                  {todayOnly ? "Tasks due today" : "Tasks due this week"}
+                </p>
+
+                {visibleTasks.map((task) => {
+                  const key = `task-${todayKey}-${task.id || task.name}-${task.dueDate}`;
+
+                  return (
+                    <div className="task-item" key={key}>
+                      <label className="check-row">
+                        <input
+                          type="checkbox"
+                          checked={!!checkedItems[key]}
+                          onChange={() => toggleChecked(key)}
+                        />
+                        <div>
+                          <div className={checkedItems[key] ? "checked-text" : ""}>
+                            {task.name}
+                          </div>
+                          <div className="task-priority">
+                            {task.priority} • {task.dueDate}
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  );
+                })}
+              </>
+            ) : (
+              <p className="small-note">
+                {todayOnly ? "No tasks due today." : "No tasks due this week."}
+              </p>
+            )}
+
+            {clientFocus.length > 0 && (
+              <>
+                <p className="section-label">Client focus</p>
+
+                {clientFocus.map((item, i) => (
+                  <div className="client-item" key={i}>
+                    <div className="client-name">{item.client}</div>
+                    {item.focus && <div className="client-focus">{item.focus}</div>}
+                    {item.nextStep && (
+                      <div className="client-focus">Next: {item.nextStep}</div>
+                    )}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        );
+      }
+
+      function renderEveningResetCard() {
+        return (
+          <div className="card">
+            <h2 className="card-title">Evening Reset</h2>
+            <p className="gentle-copy">
+              Close the loop gently. This is what makes the weekly check-in useful. Use Wispr Flow if talking it out is easier.
+            </p>
+
+            <div className="grid-2">
+              <div className="field">
+                <label>What worked?</label>
+                <textarea
+                  className="notes-textarea"
+                  value={checkin.whatWorked}
+                  onChange={(e) => updateCheckin("whatWorked", e.target.value)}
+                  placeholder="What helped today?"
+                />
+              </div>
+
+              <div className="field">
+                <label>What felt heavy?</label>
+                <textarea
+                  className="notes-textarea"
+                  value={checkin.whatFeltHeavy}
+                  onChange={(e) => updateCheckin("whatFeltHeavy", e.target.value)}
+                  placeholder="What drained you or felt hard?"
+                />
+              </div>
+            </div>
+
+            <div className="grid-2" style={{ marginTop: "12px" }}>
+              <div className="field">
+                <label>Carry forward</label>
+                <textarea
+                  className="notes-textarea"
+                  value={checkin.carryForward}
+                  onChange={(e) => updateCheckin("carryForward", e.target.value)}
+                  placeholder="What needs moving to tomorrow?"
+                />
+              </div>
+
+              <div className="field">
+                <label>Evening notes</label>
+                <textarea
+                  className="notes-textarea"
+                  value={checkin.eveningNotes}
+                  onChange={(e) => updateCheckin("eveningNotes", e.target.value)}
+                  placeholder="Workout Witch, breathwork, tomorrow prep..."
+                />
+              </div>
             </div>
           </div>
-        </div>
-      );
+        );
+      }
 
       return (
         <div className="planner">
@@ -1009,13 +1021,13 @@
               </div>
             </header>
 
-            <TodayCard />
+            {renderTodayCard()}
 
-            <BodyAnchorsCard />
+            {renderBodyAnchorsCard()}
 
-            <OpenLoopsCard />
+            {renderOpenLoopsCard()}
 
-            <HomeCard />
+            {renderHomeCard()}
 
             {isWeekend ? (
               <>
@@ -1027,13 +1039,13 @@
                   {showWorkWeekend ? "Hide work again" : "Peek at work"}
                 </button>
 
-                {showWorkWeekend && <WorkCard />}
+                {showWorkWeekend && renderWorkCard()}
               </>
             ) : (
-              <WorkCard />
+              renderWorkCard()
             )}
 
-            <EveningResetCard />
+            {renderEveningResetCard()}
           </div>
         </div>
       );
