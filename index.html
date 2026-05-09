@@ -214,6 +214,32 @@
       font-weight: 600;
     }
 
+    .field-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .voice-button {
+      background: var(--cream);
+      color: var(--warm-brown);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 11px;
+      cursor: pointer;
+      width: fit-content;
+      align-self: flex-start;
+      white-space: nowrap;
+    }
+
+    .voice-button.listening {
+      background: var(--dusty-rose);
+      color: white;
+      border-color: var(--dusty-rose);
+    }
+
     input[type="text"],
     input[type="number"],
     select,
@@ -386,6 +412,10 @@
         padding: 22px;
         border-radius: 20px;
       }
+
+      .field-header {
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -440,6 +470,16 @@
       return 99;
     }
 
+    function restoreScroll(scrollY) {
+      setTimeout(() => {
+        try {
+          window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
+        } catch {
+          window.scrollTo(0, scrollY);
+        }
+      }, 0);
+    }
+
     function PlannerDashboard() {
       const today = new Date();
       const isWeekend = today.getDay() === 0 || today.getDay() === 6;
@@ -486,6 +526,11 @@
       const [error, setError] = useState("");
       const [todayOnly, setTodayOnly] = useState(false);
       const [showWorkWeekend, setShowWorkWeekend] = useState(false);
+      const [listeningField, setListeningField] = useState("");
+
+      const supportsVoice =
+        typeof window !== "undefined" &&
+        ("webkitSpeechRecognition" in window || "SpeechRecognition" in window);
 
       const [checkedItems, setCheckedItems] = useState(() =>
         load(`planner_checkedItems_${todayKey}`, {})
@@ -522,7 +567,74 @@
         }));
       };
 
+      const startVoiceInput = (fieldKey, append = true) => {
+        const scrollY = window.scrollY;
+        setError("");
+
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+          setError("Voice input is not supported in this browser. Try Chrome, Edge, or use your phone keyboard dictation.");
+          restoreScroll(scrollY);
+          return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-GB";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        setListeningField(fieldKey);
+
+        recognition.onresult = (event) => {
+          const transcript = event.results?.[0]?.[0]?.transcript || "";
+
+          if (!transcript) return;
+
+          setCheckin((prev) => {
+            const existing = prev[fieldKey] || "";
+            const spacer = existing && append ? "\n" : "";
+
+            return {
+              ...prev,
+              [fieldKey]: append ? `${existing}${spacer}${transcript}` : transcript,
+            };
+          });
+
+          restoreScroll(scrollY);
+        };
+
+        recognition.onerror = (event) => {
+          setError(event.error ? `Voice input error: ${event.error}` : "Voice input failed.");
+          restoreScroll(scrollY);
+        };
+
+        recognition.onend = () => {
+          setListeningField("");
+          restoreScroll(scrollY);
+        };
+
+        recognition.start();
+      };
+
+      const VoiceButton = ({ fieldKey, append = true }) => (
+        <button
+          type="button"
+          className={`voice-button ${listeningField === fieldKey ? "listening" : ""}`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            startVoiceInput(fieldKey, append);
+          }}
+          title={supportsVoice ? "Speak into this field" : "Voice input may not be supported in this browser"}
+        >
+          {listeningField === fieldKey ? "Listening..." : "🎙 Speak"}
+        </button>
+      );
+
       const handlePullNotion = async () => {
+        const scrollY = window.scrollY;
         setLoading(true);
         setError("");
         setSynced("");
@@ -554,9 +666,11 @@
         }
 
         setLoading(false);
+        restoreScroll(scrollY);
       };
 
       const handleSaveCheckin = async () => {
+        const scrollY = window.scrollY;
         setSaving(true);
         setError("");
         setSynced("");
@@ -591,6 +705,7 @@
         }
 
         setSaving(false);
+        restoreScroll(scrollY);
       };
 
       const { weekTasks = [], clientFocus = [], homeToday = {} } = notionData;
@@ -618,7 +733,10 @@
 
           <div className="grid-2">
             <div className="field">
-              <label>Main focus</label>
+              <div className="field-header">
+                <label>Main focus</label>
+                <VoiceButton fieldKey="mainFocus" append={false} />
+              </div>
               <input
                 type="text"
                 value={checkin.mainFocus}
@@ -628,7 +746,10 @@
             </div>
 
             <div className="field">
-              <label>Next right step</label>
+              <div className="field-header">
+                <label>Next right step</label>
+                <VoiceButton fieldKey="nextRightStep" append={false} />
+              </div>
               <input
                 type="text"
                 value={checkin.nextRightStep}
@@ -640,7 +761,10 @@
 
           <div className="grid-3" style={{ marginTop: "12px" }}>
             <div className="field">
-              <label>One me thing</label>
+              <div className="field-header">
+                <label>One me thing</label>
+                <VoiceButton fieldKey="oneMeThing" append={false} />
+              </div>
               <input
                 type="text"
                 value={checkin.oneMeThing}
@@ -650,7 +774,10 @@
             </div>
 
             <div className="field">
-              <label>One home thing</label>
+              <div className="field-header">
+                <label>One home thing</label>
+                <VoiceButton fieldKey="oneHomeThing" append={false} />
+              </div>
               <input
                 type="text"
                 value={checkin.oneHomeThing}
@@ -660,7 +787,10 @@
             </div>
 
             <div className="field">
-              <label>One work thing</label>
+              <div className="field-header">
+                <label>One work thing</label>
+                <VoiceButton fieldKey="oneWorkThing" append={false} />
+              </div>
               <input
                 type="text"
                 value={checkin.oneWorkThing}
@@ -728,8 +858,12 @@
 
       const OpenLoopsCard = () => (
         <div className="card">
-          <h2 className="card-title">Open Loops</h2>
-          <p className="gentle-copy">
+          <div className="field-header">
+            <h2 className="card-title" style={{ marginBottom: 0, flex: 1 }}>Open Loops</h2>
+            <VoiceButton fieldKey="openLoops" />
+          </div>
+
+          <p className="gentle-copy" style={{ marginTop: "18px" }}>
             Get it out of your head. This is not a performance list — it’s a pressure valve.
           </p>
 
@@ -832,6 +966,7 @@
 
           <div className="toggle-row">
             <button
+              type="button"
               className={`toggle-button ${!todayOnly ? "active" : ""}`}
               onClick={() => setTodayOnly(false)}
             >
@@ -839,6 +974,7 @@
             </button>
 
             <button
+              type="button"
               className={`toggle-button ${todayOnly ? "active" : ""}`}
               onClick={() => setTodayOnly(true)}
             >
@@ -909,7 +1045,10 @@
 
           <div className="grid-2">
             <div className="field">
-              <label>What worked?</label>
+              <div className="field-header">
+                <label>What worked?</label>
+                <VoiceButton fieldKey="whatWorked" />
+              </div>
               <textarea
                 className="notes-textarea"
                 value={checkin.whatWorked}
@@ -919,7 +1058,10 @@
             </div>
 
             <div className="field">
-              <label>What felt heavy?</label>
+              <div className="field-header">
+                <label>What felt heavy?</label>
+                <VoiceButton fieldKey="whatFeltHeavy" />
+              </div>
               <textarea
                 className="notes-textarea"
                 value={checkin.whatFeltHeavy}
@@ -931,7 +1073,10 @@
 
           <div className="grid-2" style={{ marginTop: "12px" }}>
             <div className="field">
-              <label>Carry forward</label>
+              <div className="field-header">
+                <label>Carry forward</label>
+                <VoiceButton fieldKey="carryForward" />
+              </div>
               <textarea
                 className="notes-textarea"
                 value={checkin.carryForward}
@@ -941,7 +1086,10 @@
             </div>
 
             <div className="field">
-              <label>Evening notes</label>
+              <div className="field-header">
+                <label>Evening notes</label>
+                <VoiceButton fieldKey="eveningNotes" />
+              </div>
               <textarea
                 className="notes-textarea"
                 value={checkin.eveningNotes}
@@ -965,11 +1113,21 @@
 
               <div className="header-right">
                 <div className="button-row">
-                  <button className="sync-button" onClick={handlePullNotion} disabled={loading}>
+                  <button
+                    type="button"
+                    className="sync-button"
+                    onClick={handlePullNotion}
+                    disabled={loading}
+                  >
                     {loading ? "Pulling..." : "Pull Notion"}
                   </button>
 
-                  <button className="save-button" onClick={handleSaveCheckin} disabled={saving}>
+                  <button
+                    type="button"
+                    className="save-button"
+                    onClick={handleSaveCheckin}
+                    disabled={saving}
+                  >
                     {saving ? "Saving..." : "Save Check-in"}
                   </button>
                 </div>
@@ -990,6 +1148,7 @@
             {isWeekend ? (
               <>
                 <button
+                  type="button"
                   className="weekend-work-button"
                   onClick={() => setShowWorkWeekend(!showWorkWeekend)}
                 >
