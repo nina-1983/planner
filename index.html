@@ -255,38 +255,34 @@
     .brain-textarea { min-height: 140px; }
     .notes-textarea { min-height: 90px; }
 
-    .anchor-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .anchor-item {
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-    }
-
-    .anchor-item label,
-    .check-row {
+    .anchor-tabs {
       display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      line-height: 1.35;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 16px;
     }
 
-    input[type="checkbox"] {
-      margin-top: 2px;
-      accent-color: var(--sage);
+    .anchor-tab {
+      background: var(--sage);
+      color: white;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       cursor: pointer;
+      line-height: 1.2;
     }
 
-    .checked-text {
+    .anchor-tab input {
+      margin: 0;
+      accent-color: white;
+    }
+
+    .anchor-tab .checked-text {
       text-decoration: line-through;
-      opacity: 0.55;
+      opacity: 0.7;
     }
 
     .task-item, .home-item, .client-item {
@@ -365,11 +361,30 @@
       line-height: 1.45;
     }
 
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: var(--sage);
+      cursor: pointer;
+    }
+
+    .checked-text {
+      text-decoration: line-through;
+      opacity: 0.55;
+    }
+
     @media(max-width: 800px) {
       .grid-2,
       .grid-3,
-      .home-grid,
-      .anchor-grid {
+      .home-grid {
         grid-template-columns: 1fr;
       }
 
@@ -728,20 +743,18 @@
               </div>
             </div>
 
-            <div className="anchor-grid" style={{ marginTop: "16px" }}>
+            <div className="anchor-tabs">
               {bodyAnchors.map((anchor) => (
-                <div className="anchor-item" key={anchor.key}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={!!checkin[anchor.key]}
-                      onChange={() => updateCheckin(anchor.key, !checkin[anchor.key])}
-                    />
-                    <span className={checkin[anchor.key] ? "checked-text" : ""}>
-                      {anchor.label}
-                    </span>
-                  </label>
-                </div>
+                <label className="anchor-tab" key={anchor.key}>
+                  <input
+                    type="checkbox"
+                    checked={!!checkin[anchor.key]}
+                    onChange={() => updateCheckin(anchor.key, !checkin[anchor.key])}
+                  />
+                  <span className={checkin[anchor.key] ? "checked-text" : ""}>
+                    {anchor.label}
+                  </span>
+                </label>
               ))}
             </div>
           </div>
