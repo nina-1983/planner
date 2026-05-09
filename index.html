@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Planner Dashboard</title>
+  <title>My Daily Planner</title>
 
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -214,32 +214,6 @@
       font-weight: 600;
     }
 
-    .field-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .voice-button {
-      background: var(--cream);
-      color: var(--warm-brown);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 7px 11px;
-      font-size: 11px;
-      cursor: pointer;
-      width: fit-content;
-      align-self: flex-start;
-      white-space: nowrap;
-    }
-
-    .voice-button.listening {
-      background: var(--dusty-rose);
-      color: white;
-      border-color: var(--dusty-rose);
-    }
-
     input[type="text"],
     input[type="number"],
     select,
@@ -412,10 +386,6 @@
         padding: 22px;
         border-radius: 20px;
       }
-
-      .field-header {
-        align-items: flex-start;
-      }
     }
   </style>
 </head>
@@ -526,11 +496,6 @@
       const [error, setError] = useState("");
       const [todayOnly, setTodayOnly] = useState(false);
       const [showWorkWeekend, setShowWorkWeekend] = useState(false);
-      const [listeningField, setListeningField] = useState("");
-
-      const supportsVoice =
-        typeof window !== "undefined" &&
-        ("webkitSpeechRecognition" in window || "SpeechRecognition" in window);
 
       const [checkedItems, setCheckedItems] = useState(() =>
         load(`planner_checkedItems_${todayKey}`, {})
@@ -561,77 +526,15 @@
       };
 
       const toggleChecked = (key) => {
+        const scrollY = window.scrollY;
+
         setCheckedItems((prev) => ({
           ...prev,
           [key]: !prev[key],
         }));
+
+        restoreScroll(scrollY);
       };
-
-      const startVoiceInput = (fieldKey, append = true) => {
-        const scrollY = window.scrollY;
-        setError("");
-
-        const SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        if (!SpeechRecognition) {
-          setError("Voice input is not supported in this browser. Try Chrome, Edge, or use your phone keyboard dictation.");
-          restoreScroll(scrollY);
-          return;
-        }
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = "en-GB";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        setListeningField(fieldKey);
-
-        recognition.onresult = (event) => {
-          const transcript = event.results?.[0]?.[0]?.transcript || "";
-
-          if (!transcript) return;
-
-          setCheckin((prev) => {
-            const existing = prev[fieldKey] || "";
-            const spacer = existing && append ? "\n" : "";
-
-            return {
-              ...prev,
-              [fieldKey]: append ? `${existing}${spacer}${transcript}` : transcript,
-            };
-          });
-
-          restoreScroll(scrollY);
-        };
-
-        recognition.onerror = (event) => {
-          setError(event.error ? `Voice input error: ${event.error}` : "Voice input failed.");
-          restoreScroll(scrollY);
-        };
-
-        recognition.onend = () => {
-          setListeningField("");
-          restoreScroll(scrollY);
-        };
-
-        recognition.start();
-      };
-
-      const VoiceButton = ({ fieldKey, append = true }) => (
-        <button
-          type="button"
-          className={`voice-button ${listeningField === fieldKey ? "listening" : ""}`}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            startVoiceInput(fieldKey, append);
-          }}
-          title={supportsVoice ? "Speak into this field" : "Voice input may not be supported in this browser"}
-        >
-          {listeningField === fieldKey ? "Listening..." : "🎙 Speak"}
-        </button>
-      );
 
       const handlePullNotion = async () => {
         const scrollY = window.scrollY;
@@ -733,10 +636,7 @@
 
           <div className="grid-2">
             <div className="field">
-              <div className="field-header">
-                <label>Main focus</label>
-                <VoiceButton fieldKey="mainFocus" append={false} />
-              </div>
+              <label>Main focus</label>
               <input
                 type="text"
                 value={checkin.mainFocus}
@@ -746,10 +646,7 @@
             </div>
 
             <div className="field">
-              <div className="field-header">
-                <label>Next right step</label>
-                <VoiceButton fieldKey="nextRightStep" append={false} />
-              </div>
+              <label>Next right step</label>
               <input
                 type="text"
                 value={checkin.nextRightStep}
@@ -761,10 +658,7 @@
 
           <div className="grid-3" style={{ marginTop: "12px" }}>
             <div className="field">
-              <div className="field-header">
-                <label>One me thing</label>
-                <VoiceButton fieldKey="oneMeThing" append={false} />
-              </div>
+              <label>One me thing</label>
               <input
                 type="text"
                 value={checkin.oneMeThing}
@@ -774,10 +668,7 @@
             </div>
 
             <div className="field">
-              <div className="field-header">
-                <label>One home thing</label>
-                <VoiceButton fieldKey="oneHomeThing" append={false} />
-              </div>
+              <label>One home thing</label>
               <input
                 type="text"
                 value={checkin.oneHomeThing}
@@ -787,10 +678,7 @@
             </div>
 
             <div className="field">
-              <div className="field-header">
-                <label>One work thing</label>
-                <VoiceButton fieldKey="oneWorkThing" append={false} />
-              </div>
+              <label>One work thing</label>
               <input
                 type="text"
                 value={checkin.oneWorkThing}
@@ -858,13 +746,9 @@
 
       const OpenLoopsCard = () => (
         <div className="card">
-          <div className="field-header">
-            <h2 className="card-title" style={{ marginBottom: 0, flex: 1 }}>Open Loops</h2>
-            <VoiceButton fieldKey="openLoops" />
-          </div>
-
-          <p className="gentle-copy" style={{ marginTop: "18px" }}>
-            Get it out of your head. This is not a performance list — it’s a pressure valve.
+          <h2 className="card-title">Open Loops</h2>
+          <p className="gentle-copy">
+            Get it out of your head. This is not a performance list — it’s a pressure valve. Use Wispr Flow here if talking is easier.
           </p>
 
           <textarea
@@ -1040,15 +924,12 @@
         <div className="card">
           <h2 className="card-title">Evening Reset</h2>
           <p className="gentle-copy">
-            Close the loop gently. This is what makes the weekly check-in useful.
+            Close the loop gently. This is what makes the weekly check-in useful. Use Wispr Flow if talking it out is easier.
           </p>
 
           <div className="grid-2">
             <div className="field">
-              <div className="field-header">
-                <label>What worked?</label>
-                <VoiceButton fieldKey="whatWorked" />
-              </div>
+              <label>What worked?</label>
               <textarea
                 className="notes-textarea"
                 value={checkin.whatWorked}
@@ -1058,10 +939,7 @@
             </div>
 
             <div className="field">
-              <div className="field-header">
-                <label>What felt heavy?</label>
-                <VoiceButton fieldKey="whatFeltHeavy" />
-              </div>
+              <label>What felt heavy?</label>
               <textarea
                 className="notes-textarea"
                 value={checkin.whatFeltHeavy}
@@ -1073,10 +951,7 @@
 
           <div className="grid-2" style={{ marginTop: "12px" }}>
             <div className="field">
-              <div className="field-header">
-                <label>Carry forward</label>
-                <VoiceButton fieldKey="carryForward" />
-              </div>
+              <label>Carry forward</label>
               <textarea
                 className="notes-textarea"
                 value={checkin.carryForward}
@@ -1086,10 +961,7 @@
             </div>
 
             <div className="field">
-              <div className="field-header">
-                <label>Evening notes</label>
-                <VoiceButton fieldKey="eveningNotes" />
-              </div>
+              <label>Evening notes</label>
               <textarea
                 className="notes-textarea"
                 value={checkin.eveningNotes}
