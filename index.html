@@ -29,6 +29,8 @@
       --muted: #7A6E68;
       --border: #E8E0D8;
       --shadow: 0 2px 16px rgba(44,36,32,0.07);
+      --error-bg: #F7E8E2;
+      --error-text: #9B4A3A;
     }
 
     .planner {
@@ -91,7 +93,18 @@
       gap: 10px;
     }
 
-    .sync-button, .toggle-button {
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .sync-button, .save-button, .toggle-button {
       background: var(--sage);
       color: white;
       border: none;
@@ -101,6 +114,10 @@
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+
+    .save-button {
+      background: var(--dusty-rose);
     }
 
     .toggle-button {
@@ -126,14 +143,8 @@
       box-shadow: var(--shadow);
     }
 
-    .toggle-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .sync-button:disabled {
+    .sync-button:disabled,
+    .save-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -145,11 +156,11 @@
 
     .error-message {
       font-size: 12px;
-      color: #9B4A3A;
-      background: #F7E8E2;
+      color: var(--error-text);
+      background: var(--error-bg);
       padding: 8px 10px;
       border-radius: 8px;
-      max-width: 320px;
+      max-width: 360px;
       line-height: 1.4;
     }
 
@@ -168,6 +179,114 @@
       color: var(--dusty-rose);
       font-weight: 600;
       margin: 18px 0 12px;
+    }
+
+    .gentle-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea,
+    .brain-textarea,
+    .notes-textarea {
+      appearance: none;
+      -webkit-appearance: none;
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      background: var(--cream) !important;
+      border: 1.5px solid var(--border) !important;
+      border-radius: 12px !important;
+      padding: 13px 14px !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 14px !important;
+      line-height: 1.5 !important;
+      color: var(--warm-brown) !important;
+      outline: none !important;
+      resize: vertical;
+      box-shadow: none !important;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      font-family: 'DM Sans', sans-serif !important;
+      color: var(--muted) !important;
+      opacity: 0.65;
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: var(--sage) !important;
+      box-shadow: 0 0 0 3px rgba(138, 158, 138, 0.12) !important;
+    }
+
+    .brain-textarea { min-height: 140px; }
+    .notes-textarea { min-height: 90px; }
+
+    .anchor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .anchor-item {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .anchor-item label,
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: var(--sage);
+      cursor: pointer;
+    }
+
+    .checked-text {
+      text-decoration: line-through;
+      opacity: 0.55;
     }
 
     .task-item, .home-item, .client-item {
@@ -232,109 +351,41 @@
       font-size: 10px;
     }
 
-    .check-row {
+    .toggle-row {
       display: flex;
-      align-items: flex-start;
       gap: 8px;
-      cursor: pointer;
-    }
-
-    .check-row input {
-      margin-top: 2px;
-      accent-color: var(--sage);
-      cursor: pointer;
-    }
-
-    .checked-text {
-      text-decoration: line-through;
-      opacity: 0.55;
-    }
-
-    .reset-card {
-      padding: 20px 22px;
-    }
-
-    .reset-card .card-title {
-      margin-bottom: 10px;
-      padding-bottom: 8px;
-    }
-
-    .reset-intro {
-      color: var(--muted);
-      font-size: 12.5px;
-      line-height: 1.45;
-      margin-bottom: 12px;
-    }
-
-    .reset-list {
-      display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      margin-bottom: 16px;
     }
 
-    .reset-item {
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 7px 10px;
-    }
-
-    .reset-item label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      cursor: pointer;
+    .small-note {
       font-size: 12px;
-      line-height: 1.2;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.45;
     }
 
-    .reset-item input {
-      margin: 0;
-      accent-color: var(--sage);
-    }
+    @media(max-width: 800px) {
+      .grid-2,
+      .grid-3,
+      .home-grid,
+      .anchor-grid {
+        grid-template-columns: 1fr;
+      }
 
-    textarea,
-    .brain-textarea,
-    .notes-textarea {
-      appearance: none;
-      -webkit-appearance: none;
-      display: block;
-      width: 100%;
-      max-width: 100%;
-      background: var(--cream) !important;
-      border: 1.5px solid var(--border) !important;
-      border-radius: 12px !important;
-      padding: 14px 16px !important;
-      font-family: 'DM Sans', sans-serif !important;
-      font-size: 14px !important;
-      line-height: 1.5 !important;
-      color: var(--warm-brown) !important;
-      outline: none !important;
-      resize: vertical;
-      box-shadow: none !important;
-    }
+      .header-right {
+        align-items: flex-start;
+        width: 100%;
+      }
 
-    textarea::placeholder,
-    .brain-textarea::placeholder,
-    .notes-textarea::placeholder {
-      font-family: 'DM Sans', sans-serif !important;
-      color: var(--muted) !important;
-      opacity: 0.65;
-    }
+      .button-row {
+        justify-content: flex-start;
+      }
 
-    textarea:focus,
-    .brain-textarea:focus,
-    .notes-textarea:focus {
-      border-color: var(--sage) !important;
-      box-shadow: 0 0 0 3px rgba(138, 158, 138, 0.12) !important;
-    }
-
-    .brain-textarea { min-height: 160px; }
-    .notes-textarea { min-height: 110px; }
-
-    @media(max-width: 700px) {
-      .home-grid { grid-template-columns: 1fr; }
-      .header-right { align-items: flex-start; }
+      .header, .card {
+        padding: 22px;
+        border-radius: 20px;
+      }
     }
   </style>
 </head>
@@ -347,35 +398,20 @@
 
     const quotes = [
       "One thing at a time. Everything else can wait.",
+      "Body first. Then home. Then business.",
       "Small moves. Steady pace. Real results.",
       "You don't need more hours — you need clearer priorities.",
-      "Build the day before it builds itself.",
       "Slow is smooth. Smooth is fast.",
     ];
 
-    const resetCore = [
-      "Drink water before anything else",
-      "Open the curtains or get some daylight",
-      "Brain dump before checking too much",
-      "Move your body for 2 minutes",
-      "Choose one main focus for today",
-    ];
-
-    const resetRotating = [
-      "Resist doomscrolling for the first 30 minutes",
-      "Tidy one tiny space",
-      "Put on a morning playlist",
-      "Step outside for fresh air",
-      "Write down one thing you’re looking forward to",
-      "Check in with your energy levels",
-      "Empty one mental tab",
-      "Stretch your shoulders",
-      "Take three slow breaths",
-      "Make your first task smaller",
-      "Leave one thing until later without guilt",
-      "Do a tiny reset before you start work",
-      "Put something away that has been annoying you",
-      "Ask yourself: what do I actually need today?",
+    const bodyAnchors = [
+      { key: "water", label: "Water" },
+      { key: "breakfast", label: "Breakfast" },
+      { key: "lunch", label: "Lunch" },
+      { key: "dinner", label: "Dinner" },
+      { key: "movement", label: "Movement" },
+      { key: "aloneTime", label: "15 minutes alone" },
+      { key: "nervousSystemReset", label: "Nervous system reset" },
     ];
 
     function getUKDateKey(date = new Date()) {
@@ -404,27 +440,6 @@
       return 99;
     }
 
-    function toggleChecked(key, checkedItems, setCheckedItems) {
-      setCheckedItems({
-        ...checkedItems,
-        [key]: !checkedItems[key],
-      });
-    }
-
-    function getDailyResetPrompts(today) {
-      const seed = today.getFullYear() + today.getMonth() + today.getDate();
-
-      const rotated = [...resetRotating]
-        .sort((a, b) => {
-          const aVal = a.charCodeAt(0) + a.length + seed;
-          const bVal = b.charCodeAt(0) + b.length + seed;
-          return (aVal % 13) - (bVal % 13);
-        })
-        .slice(0, 3);
-
-      return [...resetCore, ...rotated];
-    }
-
     function PlannerDashboard() {
       const today = new Date();
       const isWeekend = today.getDay() === 0 || today.getDay() === 6;
@@ -437,17 +452,37 @@
         year: "numeric",
       });
 
-      const todayName = today.toLocaleDateString("en-GB", {
-        weekday: "long",
-      });
-
       const todayQuote = quotes[today.getDay() % quotes.length];
-      const resetPrompts = getDailyResetPrompts(today);
 
-      const [brainDump, setBrainDump] = useState(() => load("planner_brainDump", ""));
-      const [notes, setNotes] = useState(() => load("planner_notes", ""));
-      const [synced, setSynced] = useState(false);
+      const defaultCheckin = {
+        mainFocus: "",
+        nextRightStep: "",
+        energy: "",
+        mood: "Okay",
+        water: false,
+        breakfast: false,
+        lunch: false,
+        dinner: false,
+        movement: false,
+        aloneTime: false,
+        nervousSystemReset: false,
+        oneMeThing: "",
+        oneHomeThing: "",
+        oneWorkThing: "",
+        openLoops: "",
+        whatWorked: "",
+        whatFeltHeavy: "",
+        carryForward: "",
+        eveningNotes: "",
+      };
+
+      const [checkin, setCheckin] = useState(() =>
+        load(`planner_checkin_${todayKey}`, defaultCheckin)
+      );
+
+      const [synced, setSynced] = useState("");
       const [loading, setLoading] = useState(false);
+      const [saving, setSaving] = useState(false);
       const [error, setError] = useState("");
       const [todayOnly, setTodayOnly] = useState(false);
       const [showWorkWeekend, setShowWorkWeekend] = useState(false);
@@ -465,12 +500,8 @@
       );
 
       useEffect(() => {
-        localStorage.setItem("planner_brainDump", JSON.stringify(brainDump));
-      }, [brainDump]);
-
-      useEffect(() => {
-        localStorage.setItem("planner_notes", JSON.stringify(notes));
-      }, [notes]);
+        localStorage.setItem(`planner_checkin_${todayKey}`, JSON.stringify(checkin));
+      }, [checkin, todayKey]);
 
       useEffect(() => {
         localStorage.setItem("planner_notionData", JSON.stringify(notionData));
@@ -480,9 +511,21 @@
         localStorage.setItem(`planner_checkedItems_${todayKey}`, JSON.stringify(checkedItems));
       }, [checkedItems, todayKey]);
 
-      const handleSync = async () => {
+      const updateCheckin = (key, value) => {
+        setCheckin((prev) => ({ ...prev, [key]: value }));
+      };
+
+      const toggleChecked = (key) => {
+        setCheckedItems((prev) => ({
+          ...prev,
+          [key]: !prev[key],
+        }));
+      };
+
+      const handlePullNotion = async () => {
         setLoading(true);
         setError("");
+        setSynced("");
 
         try {
           const response = await fetch("/api/sync", {
@@ -500,17 +543,54 @@
           }
 
           if (!response.ok) {
-            throw new Error(data.error || "Sync failed");
+            throw new Error(data.error || "Notion pull failed");
           }
 
           setNotionData(data);
-          setSynced(true);
-          setTimeout(() => setSynced(false), 2000);
+          setSynced("✓ Notion pulled");
+          setTimeout(() => setSynced(""), 2200);
         } catch (error) {
-          setError(error.message || "Notion sync failed");
+          setError(error.message || "Notion pull failed");
         }
 
         setLoading(false);
+      };
+
+      const handleSaveCheckin = async () => {
+        setSaving(true);
+        setError("");
+        setSynced("");
+
+        try {
+          const response = await fetch("/api/checkin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              date: todayKey,
+              ...checkin,
+            }),
+          });
+
+          const text = await response.text();
+          let data;
+
+          try {
+            data = JSON.parse(text);
+          } catch {
+            throw new Error("Check-in API is not returning JSON.");
+          }
+
+          if (!response.ok) {
+            throw new Error(data.error || "Check-in save failed");
+          }
+
+          setSynced("✓ Check-in saved");
+          setTimeout(() => setSynced(""), 2200);
+        } catch (error) {
+          setError(error.message || "Check-in save failed");
+        }
+
+        setSaving(false);
       };
 
       const { weekTasks = [], clientFocus = [], homeToday = {} } = notionData;
@@ -529,34 +609,137 @@
 
       const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
 
-      const TodayResetCard = () => (
-        <div className="card reset-card">
-          <h2 className="card-title">{todayName} Reset</h2>
-
-          <p className="reset-intro">
-            Start gently. You don’t need to do everything — just come back to yourself first.
+      const TodayCard = () => (
+        <div className="card">
+          <h2 className="card-title">Today</h2>
+          <p className="gentle-copy">
+            Don’t plan the whole life. Just choose the day.
           </p>
 
-          <div className="reset-list">
-            {resetPrompts.map((prompt) => {
-              const key = `reset-${todayKey}-${prompt}`;
+          <div className="grid-2">
+            <div className="field">
+              <label>Main focus</label>
+              <input
+                type="text"
+                value={checkin.mainFocus}
+                onChange={(e) => updateCheckin("mainFocus", e.target.value)}
+                placeholder="What matters most today?"
+              />
+            </div>
 
-              return (
-                <div className="reset-item" key={key}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={!!checkedItems[key]}
-                      onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
-                    />
-                    <span className={checkedItems[key] ? "checked-text" : ""}>
-                      {prompt}
-                    </span>
-                  </label>
-                </div>
-              );
-            })}
+            <div className="field">
+              <label>Next right step</label>
+              <input
+                type="text"
+                value={checkin.nextRightStep}
+                onChange={(e) => updateCheckin("nextRightStep", e.target.value)}
+                placeholder="What is the next tiny action?"
+              />
+            </div>
           </div>
+
+          <div className="grid-3" style={{ marginTop: "12px" }}>
+            <div className="field">
+              <label>One me thing</label>
+              <input
+                type="text"
+                value={checkin.oneMeThing}
+                onChange={(e) => updateCheckin("oneMeThing", e.target.value)}
+                placeholder="e.g. walk, shower, quiet time"
+              />
+            </div>
+
+            <div className="field">
+              <label>One home thing</label>
+              <input
+                type="text"
+                value={checkin.oneHomeThing}
+                onChange={(e) => updateCheckin("oneHomeThing", e.target.value)}
+                placeholder="e.g. clear sofa, laundry, kitchen reset"
+              />
+            </div>
+
+            <div className="field">
+              <label>One work thing</label>
+              <input
+                type="text"
+                value={checkin.oneWorkThing}
+                onChange={(e) => updateCheckin("oneWorkThing", e.target.value)}
+                placeholder="e.g. challenge page, client task"
+              />
+            </div>
+          </div>
+        </div>
+      );
+
+      const BodyAnchorsCard = () => (
+        <div className="card">
+          <h2 className="card-title">Body Anchors</h2>
+          <p className="gentle-copy">
+            This is the foundation. These are not extras — they are what help you feel like you.
+          </p>
+
+          <div className="grid-2">
+            <div className="field">
+              <label>Mood</label>
+              <select
+                value={checkin.mood}
+                onChange={(e) => updateCheckin("mood", e.target.value)}
+              >
+                <option>Calm</option>
+                <option>Okay</option>
+                <option>Foggy</option>
+                <option>Anxious</option>
+                <option>Overwhelmed</option>
+              </select>
+            </div>
+
+            <div className="field">
+              <label>Energy 1–10</label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={checkin.energy}
+                onChange={(e) => updateCheckin("energy", e.target.value)}
+                placeholder="1-10"
+              />
+            </div>
+          </div>
+
+          <div className="anchor-grid" style={{ marginTop: "16px" }}>
+            {bodyAnchors.map((anchor) => (
+              <div className="anchor-item" key={anchor.key}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={!!checkin[anchor.key]}
+                    onChange={() => updateCheckin(anchor.key, !checkin[anchor.key])}
+                  />
+                  <span className={checkin[anchor.key] ? "checked-text" : ""}>
+                    {anchor.label}
+                  </span>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      const OpenLoopsCard = () => (
+        <div className="card">
+          <h2 className="card-title">Open Loops</h2>
+          <p className="gentle-copy">
+            Get it out of your head. This is not a performance list — it’s a pressure valve.
+          </p>
+
+          <textarea
+            className="brain-textarea"
+            value={checkin.openLoops}
+            onChange={(e) => updateCheckin("openLoops", e.target.value)}
+            placeholder="Pay Sammy, book dog groomer, sew badge, check credit card..."
+            rows="6"
+          />
         </div>
       );
 
@@ -599,7 +782,7 @@
                           <input
                             type="checkbox"
                             checked={!!checkedItems[key]}
-                            onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
+                            onChange={() => toggleChecked(key)}
                           />
                           <span className={checkedItems[key] ? "checked-text" : ""}>
                             {basic}
@@ -623,7 +806,7 @@
                           <input
                             type="checkbox"
                             checked={!!checkedItems[key]}
-                            onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
+                            onChange={() => toggleChecked(key)}
                           />
                           <span className={checkedItems[key] ? "checked-text" : ""}>
                             {anchor}
@@ -636,8 +819,8 @@
               )}
             </div>
           ) : (
-            <p style={{ color: "var(--muted)", fontSize: "13px" }}>
-              No home data yet. Hit Sync Notion.
+            <p className="small-note">
+              No home data yet. Hit Pull Notion.
             </p>
           )}
         </div>
@@ -678,7 +861,7 @@
                       <input
                         type="checkbox"
                         checked={!!checkedItems[key]}
-                        onChange={() => toggleChecked(key, checkedItems, setCheckedItems)}
+                        onChange={() => toggleChecked(key)}
                       />
                       <div>
                         <div className={checkedItems[key] ? "checked-text" : ""}>
@@ -694,7 +877,7 @@
               })}
             </>
           ) : (
-            <p style={{ color: "var(--muted)", fontSize: "13px" }}>
+            <p className="small-note">
               {todayOnly ? "No tasks due today." : "No tasks due this week."}
             </p>
           )}
@@ -717,6 +900,59 @@
         </div>
       );
 
+      const EveningResetCard = () => (
+        <div className="card">
+          <h2 className="card-title">Evening Reset</h2>
+          <p className="gentle-copy">
+            Close the loop gently. This is what makes the weekly check-in useful.
+          </p>
+
+          <div className="grid-2">
+            <div className="field">
+              <label>What worked?</label>
+              <textarea
+                className="notes-textarea"
+                value={checkin.whatWorked}
+                onChange={(e) => updateCheckin("whatWorked", e.target.value)}
+                placeholder="What helped today?"
+              />
+            </div>
+
+            <div className="field">
+              <label>What felt heavy?</label>
+              <textarea
+                className="notes-textarea"
+                value={checkin.whatFeltHeavy}
+                onChange={(e) => updateCheckin("whatFeltHeavy", e.target.value)}
+                placeholder="What drained you or felt hard?"
+              />
+            </div>
+          </div>
+
+          <div className="grid-2" style={{ marginTop: "12px" }}>
+            <div className="field">
+              <label>Carry forward</label>
+              <textarea
+                className="notes-textarea"
+                value={checkin.carryForward}
+                onChange={(e) => updateCheckin("carryForward", e.target.value)}
+                placeholder="What needs moving to tomorrow?"
+              />
+            </div>
+
+            <div className="field">
+              <label>Evening notes</label>
+              <textarea
+                className="notes-textarea"
+                value={checkin.eveningNotes}
+                onChange={(e) => updateCheckin("eveningNotes", e.target.value)}
+                placeholder="Workout Witch, breathwork, tomorrow prep..."
+              />
+            </div>
+          </div>
+        </div>
+      );
+
       return (
         <div className="planner">
           <div className="inner">
@@ -728,16 +964,26 @@
               </div>
 
               <div className="header-right">
-                <button className="sync-button" onClick={handleSync} disabled={loading}>
-                  {loading ? "Syncing..." : "Sync Notion"}
-                </button>
+                <div className="button-row">
+                  <button className="sync-button" onClick={handlePullNotion} disabled={loading}>
+                    {loading ? "Pulling..." : "Pull Notion"}
+                  </button>
 
-                {synced && <span className="sync-indicator">✓ synced</span>}
+                  <button className="save-button" onClick={handleSaveCheckin} disabled={saving}>
+                    {saving ? "Saving..." : "Save Check-in"}
+                  </button>
+                </div>
+
+                {synced && <span className="sync-indicator">{synced}</span>}
                 {error && <div className="error-message">{error}</div>}
               </div>
             </header>
 
-            <TodayResetCard />
+            <TodayCard />
+
+            <BodyAnchorsCard />
+
+            <OpenLoopsCard />
 
             <HomeCard />
 
@@ -756,29 +1002,7 @@
               <WorkCard />
             )}
 
-            <div className="card">
-              <h2 className="card-title">Brain dump</h2>
-
-              <textarea
-                className="brain-textarea"
-                value={brainDump}
-                onChange={(e) => setBrainDump(e.target.value)}
-                placeholder="Get it out of your head..."
-                rows="6"
-              />
-            </div>
-
-            <div className="card">
-              <h2 className="card-title">Notes & reminders</h2>
-
-              <textarea
-                className="notes-textarea"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Anything you don't want to forget..."
-                rows="4"
-              />
-            </div>
+            <EveningResetCard />
           </div>
         </div>
       );
