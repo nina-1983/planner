@@ -21,9 +21,10 @@ function checkboxProperty(value) {
 }
 
 function numberProperty(value) {
-  const number = value === "" || value === null || value === undefined
-    ? null
-    : Number(value);
+  const number =
+    value === "" || value === null || value === undefined
+      ? null
+      : Number(value);
 
   return {
     number: Number.isFinite(number) ? number : null,
