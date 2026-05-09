@@ -116,9 +116,7 @@
       letter-spacing: 0.5px;
     }
 
-    .save-button {
-      background: var(--dusty-rose);
-    }
+    .save-button { background: var(--dusty-rose); }
 
     .toggle-button {
       background: var(--cream);
@@ -214,12 +212,9 @@
       font-weight: 600;
     }
 
-    input[type="text"],
     input[type="number"],
     select,
-    textarea,
-    .brain-textarea,
-    .notes-textarea {
+    textarea {
       appearance: none;
       -webkit-appearance: none;
       display: block;
@@ -238,6 +233,16 @@
       box-shadow: none !important;
     }
 
+    .compact-textarea {
+      min-height: 46px;
+      max-height: 92px;
+      overflow-y: auto;
+      resize: none;
+    }
+
+    .brain-textarea { min-height: 140px; }
+    .notes-textarea { min-height: 90px; }
+
     textarea::placeholder,
     input::placeholder {
       font-family: 'DM Sans', sans-serif !important;
@@ -251,9 +256,6 @@
       border-color: var(--sage) !important;
       box-shadow: 0 0 0 3px rgba(138, 158, 138, 0.12) !important;
     }
-
-    .brain-textarea { min-height: 140px; }
-    .notes-textarea { min-height: 90px; }
 
     .anchor-tabs {
       display: flex;
@@ -542,12 +544,7 @@
 
       const toggleChecked = (key) => {
         const scrollY = window.scrollY;
-
-        setCheckedItems((prev) => ({
-          ...prev,
-          [key]: !prev[key],
-        }));
-
+        setCheckedItems((prev) => ({ ...prev, [key]: !prev[key] }));
         restoreScroll(scrollY);
       };
 
@@ -631,16 +628,26 @@
       const sortedTasks = [...weekTasks].sort((a, b) => {
         const priorityDiff = priorityRank(a.priority) - priorityRank(b.priority);
         if (priorityDiff !== 0) return priorityDiff;
-
         return new Date(a.dueDate || "9999-12-31") - new Date(b.dueDate || "9999-12-31");
       });
 
-      const todaysTasks = sortedTasks.filter((task) => {
-        if (!task.dueDate) return false;
-        return task.dueDate === todayKey;
-      });
-
+      const todaysTasks = sortedTasks.filter((task) => task.dueDate === todayKey);
       const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
+
+      function CompactText({ label, value, onChange, placeholder }) {
+        return (
+          <div className="field">
+            <label>{label}</label>
+            <textarea
+              className="compact-textarea"
+              value={value}
+              onChange={onChange}
+              placeholder={placeholder}
+              rows="2"
+            />
+          </div>
+        );
+      }
 
       function renderTodayCard() {
         return (
@@ -651,57 +658,42 @@
             </p>
 
             <div className="grid-2">
-              <div className="field">
-                <label>Main focus</label>
-                <input
-                  type="text"
-                  value={checkin.mainFocus}
-                  onChange={(e) => updateCheckin("mainFocus", e.target.value)}
-                  placeholder="What matters most today?"
-                />
-              </div>
+              <CompactText
+                label="Main focus"
+                value={checkin.mainFocus}
+                onChange={(e) => updateCheckin("mainFocus", e.target.value)}
+                placeholder="What matters most today?"
+              />
 
-              <div className="field">
-                <label>Next right step</label>
-                <input
-                  type="text"
-                  value={checkin.nextRightStep}
-                  onChange={(e) => updateCheckin("nextRightStep", e.target.value)}
-                  placeholder="What is the next tiny action?"
-                />
-              </div>
+              <CompactText
+                label="Next right step"
+                value={checkin.nextRightStep}
+                onChange={(e) => updateCheckin("nextRightStep", e.target.value)}
+                placeholder="What is the next tiny action?"
+              />
             </div>
 
             <div className="grid-3" style={{ marginTop: "12px" }}>
-              <div className="field">
-                <label>One me thing</label>
-                <input
-                  type="text"
-                  value={checkin.oneMeThing}
-                  onChange={(e) => updateCheckin("oneMeThing", e.target.value)}
-                  placeholder="e.g. walk, shower, quiet time"
-                />
-              </div>
+              <CompactText
+                label="One me thing"
+                value={checkin.oneMeThing}
+                onChange={(e) => updateCheckin("oneMeThing", e.target.value)}
+                placeholder="e.g. walk, shower, quiet time"
+              />
 
-              <div className="field">
-                <label>One home thing</label>
-                <input
-                  type="text"
-                  value={checkin.oneHomeThing}
-                  onChange={(e) => updateCheckin("oneHomeThing", e.target.value)}
-                  placeholder="e.g. clear sofa, laundry, kitchen reset"
-                />
-              </div>
+              <CompactText
+                label="One home thing"
+                value={checkin.oneHomeThing}
+                onChange={(e) => updateCheckin("oneHomeThing", e.target.value)}
+                placeholder="e.g. clear sofa, laundry, kitchen reset"
+              />
 
-              <div className="field">
-                <label>One work thing</label>
-                <input
-                  type="text"
-                  value={checkin.oneWorkThing}
-                  onChange={(e) => updateCheckin("oneWorkThing", e.target.value)}
-                  placeholder="e.g. challenge page, client task"
-                />
-              </div>
+              <CompactText
+                label="One work thing"
+                value={checkin.oneWorkThing}
+                onChange={(e) => updateCheckin("oneWorkThing", e.target.value)}
+                placeholder="e.g. challenge page, client task"
+              />
             </div>
           </div>
         );
@@ -718,10 +710,7 @@
             <div className="grid-2">
               <div className="field">
                 <label>Mood</label>
-                <select
-                  value={checkin.mood}
-                  onChange={(e) => updateCheckin("mood", e.target.value)}
-                >
+                <select value={checkin.mood} onChange={(e) => updateCheckin("mood", e.target.value)}>
                   <option>Calm</option>
                   <option>Okay</option>
                   <option>Foggy</option>
@@ -814,7 +803,6 @@
                     <div className="basics-list">
                       {homeToday.dailyBasics.map((basic) => {
                         const key = `basic-${todayKey}-${basic}`;
-
                         return (
                           <label className="basic-tag check-row" key={key}>
                             <input
@@ -838,7 +826,6 @@
                     <div className="basics-list">
                       {homeToday.homeAnchors.map((anchor) => {
                         const key = `anchor-${todayKey}-${anchor}`;
-
                         return (
                           <label className="basic-tag check-row" key={key}>
                             <input
@@ -932,9 +919,7 @@
                   <div className="client-item" key={i}>
                     <div className="client-name">{item.client}</div>
                     {item.focus && <div className="client-focus">{item.focus}</div>}
-                    {item.nextStep && (
-                      <div className="client-focus">Next: {item.nextStep}</div>
-                    )}
+                    {item.nextStep && <div className="client-focus">Next: {item.nextStep}</div>}
                   </div>
                 ))}
               </>
@@ -1035,11 +1020,8 @@
             </header>
 
             {renderTodayCard()}
-
             {renderBodyAnchorsCard()}
-
             {renderOpenLoopsCard()}
-
             {renderHomeCard()}
 
             {isWeekend ? (
