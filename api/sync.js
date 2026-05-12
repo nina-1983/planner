@@ -1,175 +1,213 @@
-export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+const { Client } = require("@notionhq/client");
 
-  if (req.method === "OPTIONS") return res.status(200).end();
+const notion = new Client({
+  auth: process.env.NOTION_TOKEN,
+});
 
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+const TASKS_DB_ID = process.env.NOTION_TASKS_DB_ID;
+const CLIENT_FOCUS_DB_ID = process.env.NOTION_CLIENT_FOCUS_DB_ID;
+const HOME_DB_ID = process.env.NOTION_HOME_DB_ID || "dd7ba18f385d407c977d1eb47f0671f2";
 
-  const NOTION_TOKEN = process.env.NOTION_TOKEN;
+function getUKDateKey(date = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/London",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
 
-  if (!NOTION_TOKEN) {
-    return res.status(500).json({ error: "Missing NOTION_TOKEN in Vercel" });
-  }
+function getWeekRange() {
+  const today = new Date();
+  const ukTodayString = getUKDateKey(today);
+  const ukToday = new Date(`${ukTodayString}T12:00:00`);
 
-  const headers = {
-    Authorization: `Bearer ${NOTION_TOKEN}`,
-    "Notion-Version": "2022-06-28",
-    "Content-Type": "application/json",
-  };
+  const day = ukToday.getDay();
+  const diffToMonday = ukToday.getDate() - day + (day === 0 ? -6 : 1);
 
-  const now = new Date();
-  const day = now.getDay();
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
-  monday.setHours(0, 0, 0, 0);
+  const monday = new Date(ukToday);
+  monday.setDate(diffToMonday);
 
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
 
-  const weekStart = monday.toISOString().split("T")[0];
-  const weekEnd = sunday.toISOString().split("T")[0];
+  return {
+    today: getUKDateKey(ukToday),
+    monday: getUKDateKey(monday),
+    sunday: getUKDateKey(sunday),
+  };
+}
 
+function getTitle(property) {
+  return property?.title?.map((item) => item.plain_text).join("") || "";
+}
+
+function getRichText(property) {
+  return property?.rich_text?.map((item) => item.plain_text).join("") || "";
+}
+
+function getSelect(property) {
+  return property?.select?.name || "";
+}
+
+function getStatus(property) {
+  return property?.status?.name || "";
+}
+
+function getMultiSelect(property) {
+  return property?.multi_select?.map((item) => item.name) || [];
+}
+
+function getDate(property) {
+  return property?.date?.start || "";
+}
+
+module.exports = async function handler(req, res) {
   try {
-    const tasksResponse = await fetch(
-      "https://api.notion.com/v1/databases/31bc1adacbe7802dac64dc95609a9496/query",
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          filter: {
-            and: [
-              {
-                property: "Due Date",
-                date: { on_or_after: weekStart },
-              },
-              {
-                property: "Due Date",
-                date: { on_or_before: weekEnd },
-              },
-            ],
-          },
-          sorts: [{ property: "Due Date", direction: "ascending" }],
-        }),
-      }
-    );
-
-    const tasksData = await tasksResponse.json();
-
-    if (!tasksResponse.ok) {
-      return res.status(tasksResponse.status).json({
-        error: "My Tasks failed",
-        details: tasksData,
+    if (!process.env.NOTION_TOKEN) {
+      return res.status(500).json({
+        error: "Missing NOTION_TOKEN",
       });
     }
 
-    const weekTasks = (tasksData.results || []).map((page) => ({
-      id: page.id,
-      name: page.properties.Name?.title?.[0]?.plain_text || "Untitled",
-      priority: page.properties.Priority?.select?.name || "No priority",
-      dueDate: page.properties["Due Date"]?.date?.start || "",
-      status: page.properties.Status?.status?.name || "",
-    }));
+    const { today, monday, sunday } = getWeekRange();
 
-    const clientsResponse = await fetch(
-      "https://api.notion.com/v1/databases/323c1adacbe780648916df44ef5a8465/query",
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          filter: {
-            or: [
-              {
-                property: "This Week Focus",
-                rich_text: { is_not_empty: true },
+    let weekTasks = [];
+    let clientFocus = [];
+    let homeToday = {};
+
+    if (TASKS_DB_ID) {
+      const tasksResponse = await notion.databases.query({
+        database_id: TASKS_DB_ID,
+        page_size: 100,
+        filter: {
+          and: [
+            {
+              property: "Due Date",
+              date: {
+                on_or_after: monday,
               },
-              {
-                property: "Next Step",
-                rich_text: { is_not_empty: true },
+            },
+            {
+              property: "Due Date",
+              date: {
+                on_or_before: sunday,
               },
-            ],
-          },
-        }),
-      }
-    );
+            },
+          ],
+        },
+      });
 
-    const clientsData = await clientsResponse.json();
+      weekTasks = tasksResponse.results.map((page) => {
+        const props = page.properties;
 
-    if (!clientsResponse.ok) {
-      return res.status(clientsResponse.status).json({
-        error: "Client board failed",
-        details: clientsData,
+        return {
+          id: page.id,
+          name:
+            getTitle(props.Name) ||
+            getTitle(props.Task) ||
+            getTitle(props["Task Name"]) ||
+            "Untitled task",
+          priority:
+            getSelect(props.Priority) ||
+            getSelect(props["Priority Level"]) ||
+            "",
+          dueDate:
+            getDate(props["Due Date"]) ||
+            getDate(props.Date) ||
+            "",
+          status:
+            getStatus(props.Status) ||
+            getSelect(props.Status) ||
+            "",
+        };
       });
     }
 
-    const clientFocus = (clientsData.results || []).map((page) => ({
-      client: page.properties.Clients?.title?.[0]?.plain_text || "Unknown",
-      focus: page.properties["This Week Focus"]?.rich_text?.[0]?.plain_text || "",
-      nextStep: page.properties["Next Step"]?.rich_text?.[0]?.plain_text || "",
-    }));
+    if (CLIENT_FOCUS_DB_ID) {
+      const clientResponse = await notion.databases.query({
+        database_id: CLIENT_FOCUS_DB_ID,
+        page_size: 100,
+      });
 
-    const today = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Europe/London",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-}).format(new Date());;
+      clientFocus = clientResponse.results.map((page) => {
+        const props = page.properties;
 
-    const homeResponse = await fetch(
-      "https://api.notion.com/v1/databases/dd7ba18f385d407c977d1eb47f0671f2/query",
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          filter: {
-            property: "Date",
-            date: { equals: today },
-          },
-        }),
-      }
-    );
-
-    const homeData = await homeResponse.json();
-
-    if (!homeResponse.ok) {
-      return res.status(homeResponse.status).json({
-        error: "Home board failed",
-        details: homeData,
+        return {
+          client:
+            getTitle(props.Client) ||
+            getTitle(props.Name) ||
+            getTitle(props["Client Name"]) ||
+            "Client",
+          focus:
+            getRichText(props.Focus) ||
+            getRichText(props["Weekly Focus"]) ||
+            "",
+          nextStep:
+            getRichText(props["Next Step"]) ||
+            getRichText(props["Next Action"]) ||
+            "",
+        };
       });
     }
 
-    const homeToday = homeData.results?.[0]
-      ? {
-          mealPlan:
-            homeData.results[0].properties["Meal Plan"]?.rich_text?.[0]?.plain_text || "",
-          movement:
-            homeData.results[0].properties.Movement?.select?.name || "",
-          energyNote:
-            homeData.results[0].properties["Energy Note"]?.select?.name || "",
-          dailyBasics:
-            homeData.results[0].properties["Daily Basics"]?.multi_select?.map((s) => s.name) || [],
-          homeAnchors:
-            homeData.results[0].properties["Home Anchor"]?.multi_select?.map((s) => s.name) || [],
-        }
-      : {};
+    if (HOME_DB_ID) {
+      const homeResponse = await notion.databases.query({
+        database_id: HOME_DB_ID,
+        page_size: 20,
+        filter: {
+          property: "Date",
+          date: {
+            equals: today,
+          },
+        },
+      });
+
+      const homePage = homeResponse.results[0];
+
+      if (homePage) {
+        const props = homePage.properties;
+
+        homeToday = {
+          id: homePage.id,
+          day:
+            getTitle(props.Day) ||
+            getSelect(props["Day of Week"]) ||
+            "",
+          date: getDate(props.Date),
+          briefSummary: getRichText(props["Brief Summary"]),
+          alfieToday: getRichText(props["Alfie Today"]),
+          kitNeeded: getRichText(props["Kit Needed"]),
+          prepNeeded: getRichText(props["Prep Needed"]),
+          mealPlan: getRichText(props["Meal Plan"]),
+          movement: getSelect(props.Movement),
+          oneKindThing: getRichText(props["One Kind Thing"]),
+          dailyBasics: getMultiSelect(props["Daily Basics"]),
+          homeAnchors: getMultiSelect(props["Home Anchor"]),
+          steamHit: getSelect(props["Steam Hit"]),
+          resetNeeded: props["Reset Needed"]?.checkbox || false,
+          willyAway: props["Willy Away"]?.checkbox || false,
+          priorityLevel: getSelect(props["Priority Level"]),
+          status: getStatus(props.Status),
+        };
+      }
+    }
 
     return res.status(200).json({
       weekTasks,
       clientFocus,
       homeToday,
-      weekStart,
-      weekEnd,
+      meta: {
+        today,
+        monday,
+        sunday,
+      },
     });
   } catch (error) {
+    console.error("Sync failed:", error);
+
     return res.status(500).json({
-      error: "Server crash",
-      details: error.message,
+      error: error.message || "Notion sync failed",
     });
   }
-}
+};
