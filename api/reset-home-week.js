@@ -1,9 +1,3 @@
-const { Client } = require("@notionhq/client");
-
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
-
 const HOME_DB_ID = "dd7ba18f385d407c977d1eb47f0671f2";
 
 const DAY_ORDER = [
@@ -31,10 +25,6 @@ function getLondonToday() {
   return new Date(`${year}-${month}-${day}T12:00:00`);
 }
 
-function toIsoDate(date) {
-  return date.toISOString().slice(0, 10);
-}
-
 function getMonday(date) {
   const d = new Date(date);
   const day = d.getDay();
@@ -44,6 +34,10 @@ function getMonday(date) {
   d.setHours(12, 0, 0, 0);
 
   return d;
+}
+
+function toIsoDate(date) {
+  return date.toISOString().slice(0, 10);
 }
 
 function getDayName(page) {
@@ -56,17 +50,31 @@ function getDayName(page) {
   );
 }
 
-function titleProperty(dayName) {
-  return {
-    title: [
-      {
-        type: "text",
-        text: {
-          content: dayName,
-        },
-      },
-    ],
-  };
+async function notionRequest(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+      "Notion-Version": "2022-06-28",
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  const text = await response.text();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { raw: text };
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || data.error || text || "Notion request failed");
+  }
+
+  return data;
 }
 
 module.exports = async function handler(req, res) {
@@ -82,22 +90,17 @@ module.exports = async function handler(req, res) {
     const today = getLondonToday();
     const monday = getMonday(today);
 
-    let response;
+    const queryData = await notionRequest(
+      `https://api.notion.com/v1/databases/${HOME_DB_ID}/query`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          page_size: 100,
+        }),
+      }
+    );
 
-    try {
-      response = await notion.databases.query({
-        database_id: HOME_DB_ID,
-        page_size: 100,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        stage: "query",
-        error: error.message,
-      });
-    }
-
-    const pages = response.results || [];
+    const pages = queryData.results || [];
     const updates = [];
 
     for (const dayName of DAY_ORDER) {
@@ -116,26 +119,37 @@ module.exports = async function handler(req, res) {
       }
 
       try {
-        await notion.pages.update({
-          page_id: matchingPage.id,
-          properties: {
-            Day: titleProperty(dayName),
-            "Day of Week": {
-              select: {
-                name: dayName,
+        await notionRequest(`https://api.notion.com/v1/pages/${matchingPage.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            properties: {
+              Day: {
+                title: [
+                  {
+                    type: "text",
+                    text: {
+                      content: dayName,
+                    },
+                  },
+                ],
+              },
+              "Day of Week": {
+                select: {
+                  name: dayName,
+                },
+              },
+              Date: {
+                date: {
+                  start: toIsoDate(date),
+                },
+              },
+              Status: {
+                status: {
+                  name: "Not started",
+                },
               },
             },
-            Date: {
-              date: {
-                start: toIsoDate(date),
-              },
-            },
-            Status: {
-              status: {
-                name: "Not started",
-              },
-            },
-          },
+          }),
         });
 
         updates.push({
@@ -161,7 +175,7 @@ module.exports = async function handler(req, res) {
   } catch (error) {
     return res.status(500).json({
       ok: false,
-      stage: "unknown",
+      stage: "reset-home-week",
       error: error.message || "Home week reset failed",
     });
   }
