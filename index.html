@@ -363,6 +363,39 @@
       font-size: 10px;
     }
 
+    .work-basics-strip {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .work-basics-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .work-basics-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--dusty-rose);
+      letter-spacing: 1.2px;
+      font-weight: 600;
+      margin-right: 2px;
+    }
+
+    .work-basic-tag {
+      background: var(--cream);
+      color: var(--warm-brown);
+      border: 1px solid var(--border);
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
     .toggle-row {
       display: flex;
       gap: 8px;
@@ -417,6 +450,14 @@
         padding: 22px;
         border-radius: 20px;
       }
+
+      .work-basics-inner {
+        align-items: flex-start;
+      }
+
+      .work-basics-label {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -443,6 +484,14 @@
       { key: "movement", label: "Movement" },
       { key: "aloneTime", label: "15 minutes alone" },
       { key: "nervousSystemReset", label: "Nervous system reset" },
+    ];
+
+    const workBasics = [
+      "Instagram",
+      "Emails",
+      "Engage",
+      "LinkedIn",
+      "Follow-up",
     ];
 
     function getUKDateKey(date = new Date()) {
@@ -846,11 +895,11 @@
                 )}
 
                 {homeToday.steamHit && (
-  <div className="home-item">
-    <div className="home-item-label">Steam hit</div>
-    <div className="home-item-value">{homeToday.steamHit}</div>
-  </div>
-)}
+                  <div className="home-item">
+                    <div className="home-item-label">Steam hit</div>
+                    <div className="home-item-value">{homeToday.steamHit}</div>
+                  </div>
+                )}
 
                 {homeToday.prepNeeded && (
                   <div className="home-item">
@@ -910,6 +959,33 @@
                 No home data yet. Hit Pull Notion.
               </p>
             )}
+          </div>
+        );
+      }
+
+      function renderWorkBasicsStrip() {
+        return (
+          <div className="work-basics-strip">
+            <div className="work-basics-inner">
+              <div className="work-basics-label">Work basics</div>
+
+              {workBasics.map((item) => {
+                const key = `work-basic-${todayKey}-${item}`;
+
+                return (
+                  <label className="work-basic-tag check-row" key={key}>
+                    <input
+                      type="checkbox"
+                      checked={!!checkedItems[key]}
+                      onChange={() => toggleChecked(key)}
+                    />
+                    <span className={checkedItems[key] ? "checked-text" : ""}>
+                      {item}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
           </div>
         );
       }
@@ -1085,6 +1161,7 @@
             {renderBodyAnchorsCard()}
             {renderOpenLoopsCard()}
             {renderHomeCard()}
+            {renderWorkBasicsStrip()}
 
             <button
               type="button"
