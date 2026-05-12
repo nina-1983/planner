@@ -100,9 +100,7 @@
       justify-content: flex-end;
     }
 
-    button {
-      font-family: 'DM Sans', sans-serif;
-    }
+    button { font-family: 'DM Sans', sans-serif; }
 
     .sync-button, .save-button, .toggle-button {
       background: var(--sage);
@@ -129,7 +127,7 @@
       color: white;
     }
 
-    .weekend-work-button {
+    .peek-work-button, .reset-home-button {
       align-self: flex-start;
       background: var(--warm-white);
       color: var(--muted);
@@ -141,16 +139,23 @@
       box-shadow: var(--shadow);
     }
 
-    .sync-button:disabled,
-    .save-button:disabled {
+    .reset-home-button {
+      margin: 0 0 16px;
+      box-shadow: none;
+      background: var(--cream);
+    }
+
+    .peek-work-button:hover, .reset-home-button:hover {
+      color: var(--warm-brown);
+      border-color: var(--sage);
+    }
+
+    .sync-button:disabled, .save-button:disabled, .reset-home-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
-    .sync-indicator {
-      font-size: 11px;
-      color: var(--sage);
-    }
+    .sync-indicator { font-size: 11px; color: var(--sage); }
 
     .error-message {
       font-size: 12px;
@@ -179,30 +184,10 @@
       margin: 18px 0 12px;
     }
 
-    .gentle-copy {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 14px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .gentle-copy { color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
 
     .field label {
       font-size: 10px;
@@ -212,9 +197,7 @@
       font-weight: 600;
     }
 
-    input[type="number"],
-    select,
-    textarea {
+    input[type="number"], select, textarea {
       appearance: none;
       -webkit-appearance: none;
       display: block;
@@ -233,176 +216,39 @@
       box-shadow: none !important;
     }
 
-    .compact-textarea {
-      min-height: 46px;
-      max-height: 92px;
-      overflow-y: auto;
-      resize: none;
-    }
-
+    .compact-textarea { min-height: 46px; max-height: 92px; overflow-y: auto; resize: none; }
     .brain-textarea { min-height: 140px; }
     .notes-textarea { min-height: 90px; }
 
-    textarea::placeholder,
-    input::placeholder {
-      font-family: 'DM Sans', sans-serif !important;
-      color: var(--muted) !important;
-      opacity: 0.65;
-    }
+    textarea::placeholder, input::placeholder { font-family: 'DM Sans', sans-serif !important; color: var(--muted) !important; opacity: 0.65; }
+    textarea:focus, input:focus, select:focus { border-color: var(--sage) !important; box-shadow: 0 0 0 3px rgba(138,158,138,0.12) !important; }
 
-    textarea:focus,
-    input:focus,
-    select:focus {
-      border-color: var(--sage) !important;
-      box-shadow: 0 0 0 3px rgba(138, 158, 138, 0.12) !important;
-    }
+    .anchor-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+    .anchor-tab { background: var(--sage); color: white; padding: 5px 8px; border-radius: 6px; font-size: 10px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; line-height: 1.2; }
+    .anchor-tab input { margin: 0; accent-color: white; }
+    .anchor-tab .checked-text { text-decoration: line-through; opacity: 0.7; }
 
-    .anchor-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 16px;
-    }
-
-    .anchor-tab {
-      background: var(--sage);
-      color: white;
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-size: 10px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      line-height: 1.2;
-    }
-
-    .anchor-tab input {
-      margin: 0;
-      accent-color: white;
-    }
-
-    .anchor-tab .checked-text {
-      text-decoration: line-through;
-      opacity: 0.7;
-    }
-
-    .task-item, .home-item, .client-item {
-      padding: 12px;
-      background: var(--cream);
-      border-radius: 12px;
-      margin-bottom: 8px;
-    }
-
-    .task-priority {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 4px;
-      text-transform: uppercase;
-    }
-
-    .client-item {
-      border-left: 3px solid var(--dusty-rose);
-    }
-
-    .client-name {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .client-focus {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .home-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .home-item-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 4px;
-      letter-spacing: 0.8px;
-    }
-
-    .home-item-value {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .basics-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .basic-tag {
-      background: var(--sage);
-      color: white;
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-size: 10px;
-    }
-
-    .toggle-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .small-note {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 10px;
-      line-height: 1.45;
-    }
-
-    .check-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      cursor: pointer;
-      font-size: 13px;
-      line-height: 1.35;
-    }
-
-    input[type="checkbox"] {
-      margin-top: 2px;
-      accent-color: var(--sage);
-      cursor: pointer;
-    }
-
-    .checked-text {
-      text-decoration: line-through;
-      opacity: 0.55;
-    }
+    .task-item, .home-item, .client-item { padding: 12px; background: var(--cream); border-radius: 12px; margin-bottom: 8px; }
+    .task-priority { font-size: 10px; color: var(--muted); margin-top: 4px; text-transform: uppercase; }
+    .client-item { border-left: 3px solid var(--dusty-rose); }
+    .client-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .client-focus { font-size: 12px; color: var(--muted); }
+    .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .home-item-label { font-size: 10px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.8px; }
+    .home-item-value { font-size: 13px; font-weight: 500; }
+    .basics-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .basic-tag { background: var(--sage); color: white; padding: 5px 8px; border-radius: 6px; font-size: 10px; }
+    .toggle-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .small-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+    .check-row { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; font-size: 13px; line-height: 1.35; }
+    input[type="checkbox"] { margin-top: 2px; accent-color: var(--sage); cursor: pointer; }
+    .checked-text { text-decoration: line-through; opacity: 0.55; }
 
     @media(max-width: 800px) {
-      .grid-2,
-      .grid-3,
-      .home-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .header-right {
-        align-items: flex-start;
-        width: 100%;
-      }
-
-      .button-row {
-        justify-content: flex-start;
-      }
-
-      .header, .card {
-        padding: 22px;
-        border-radius: 20px;
-      }
+      .grid-2, .grid-3, .home-grid { grid-template-columns: 1fr; }
+      .header-right { align-items: flex-start; width: 100%; }
+      .button-row { justify-content: flex-start; }
+      .header, .card { padding: 22px; border-radius: 20px; }
     }
   </style>
 </head>
@@ -432,21 +278,11 @@
     ];
 
     function getUKDateKey(date = new Date()) {
-      return new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Europe/London",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }).format(date);
+      return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
     }
 
     function load(key, fallback) {
-      try {
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-      } catch {
-        return fallback;
-      }
+      try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; }
     }
 
     function priorityRank(priority) {
@@ -458,592 +294,124 @@
     }
 
     function restoreScroll(scrollY) {
-      setTimeout(() => {
-        try {
-          window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
-        } catch {
-          window.scrollTo(0, scrollY);
-        }
-      }, 0);
+      setTimeout(() => { try { window.scrollTo({ top: scrollY, left: 0, behavior: "instant" }); } catch { window.scrollTo(0, scrollY); } }, 0);
     }
 
     function PlannerDashboard() {
       const today = new Date();
-      const isWeekend = today.getDay() === 0 || today.getDay() === 6;
       const todayKey = getUKDateKey(today);
-
-      const todayStr = today.toLocaleDateString("en-GB", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
-
+      const todayStr = today.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
       const todayQuote = quotes[today.getDay() % quotes.length];
 
       const defaultCheckin = {
-        mainFocus: "",
-        nextRightStep: "",
-        energy: "",
-        mood: "Okay",
-        water: false,
-        breakfast: false,
-        lunch: false,
-        dinner: false,
-        movement: false,
-        aloneTime: false,
-        nervousSystemReset: false,
-        oneMeThing: "",
-        oneHomeThing: "",
-        oneWorkThing: "",
-        openLoops: "",
-        whatWorked: "",
-        whatFeltHeavy: "",
-        carryForward: "",
-        eveningNotes: "",
+        mainFocus: "", nextRightStep: "", energy: "", mood: "Okay", water: false, breakfast: false, lunch: false, dinner: false, movement: false, aloneTime: false, nervousSystemReset: false,
+        oneMeThing: "", oneHomeThing: "", oneWorkThing: "", openLoops: "", whatWorked: "", whatFeltHeavy: "", carryForward: "", eveningNotes: "",
       };
 
-      const [checkin, setCheckin] = useState(() =>
-        load(`planner_checkin_${todayKey}`, defaultCheckin)
-      );
-
+      const [checkin, setCheckin] = useState(() => load(`planner_checkin_${todayKey}`, defaultCheckin));
       const [synced, setSynced] = useState("");
       const [loading, setLoading] = useState(false);
       const [saving, setSaving] = useState(false);
       const [error, setError] = useState("");
       const [todayOnly, setTodayOnly] = useState(false);
-      const [showWorkWeekend, setShowWorkWeekend] = useState(false);
+      const [showWork, setShowWork] = useState(false);
+      const [checkedItems, setCheckedItems] = useState(() => load(`planner_checkedItems_${todayKey}`, {}));
+      const [notionData, setNotionData] = useState(() => load("planner_notionData", { weekTasks: [], clientFocus: [], homeToday: {} }));
 
-      const [checkedItems, setCheckedItems] = useState(() =>
-        load(`planner_checkedItems_${todayKey}`, {})
-      );
+      useEffect(() => { localStorage.setItem(`planner_checkin_${todayKey}`, JSON.stringify(checkin)); }, [checkin, todayKey]);
+      useEffect(() => { localStorage.setItem("planner_notionData", JSON.stringify(notionData)); }, [notionData]);
+      useEffect(() => { localStorage.setItem(`planner_checkedItems_${todayKey}`, JSON.stringify(checkedItems)); }, [checkedItems, todayKey]);
 
-      const [notionData, setNotionData] = useState(() =>
-        load("planner_notionData", {
-          weekTasks: [],
-          clientFocus: [],
-          homeToday: {},
-        })
-      );
-
-      useEffect(() => {
-        localStorage.setItem(`planner_checkin_${todayKey}`, JSON.stringify(checkin));
-      }, [checkin, todayKey]);
-
-      useEffect(() => {
-        localStorage.setItem("planner_notionData", JSON.stringify(notionData));
-      }, [notionData]);
-
-      useEffect(() => {
-        localStorage.setItem(`planner_checkedItems_${todayKey}`, JSON.stringify(checkedItems));
-      }, [checkedItems, todayKey]);
-
-      const updateCheckin = (key, value) => {
-        setCheckin((prev) => ({ ...prev, [key]: value }));
-      };
-
-      const toggleChecked = (key) => {
-        const scrollY = window.scrollY;
-        setCheckedItems((prev) => ({ ...prev, [key]: !prev[key] }));
-        restoreScroll(scrollY);
-      };
+      const updateCheckin = (key, value) => setCheckin((prev) => ({ ...prev, [key]: value }));
+      const toggleChecked = (key) => { const scrollY = window.scrollY; setCheckedItems((prev) => ({ ...prev, [key]: !prev[key] })); restoreScroll(scrollY); };
 
       const handlePullNotion = async () => {
         const scrollY = window.scrollY;
-        setLoading(true);
-        setError("");
-        setSynced("");
-
+        setLoading(true); setError(""); setSynced("");
         try {
-          const response = await fetch("/api/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-          });
-
+          const response = await fetch("/api/sync", { method: "POST", headers: { "Content-Type": "application/json" } });
           const text = await response.text();
           let data;
-
-          try {
-            data = JSON.parse(text);
-          } catch {
-            throw new Error("API route is not returning JSON.");
-          }
-
-          if (!response.ok) {
-            throw new Error(data.error || "Notion pull failed");
-          }
-
+          try { data = JSON.parse(text); } catch { throw new Error("API route is not returning JSON."); }
+          if (!response.ok) throw new Error(data.error || "Notion pull failed");
           setNotionData(data);
           setSynced("✓ Notion pulled");
           setTimeout(() => setSynced(""), 2200);
-        } catch (error) {
-          setError(error.message || "Notion pull failed");
-        }
+        } catch (error) { setError(error.message || "Notion pull failed"); }
+        setLoading(false); restoreScroll(scrollY);
+      };
 
-        setLoading(false);
-        restoreScroll(scrollY);
+      const handleResetHomeWeek = async () => {
+        const scrollY = window.scrollY;
+        const confirmed = confirm("Reset the Daily Home Board dates to this week?");
+        if (!confirmed) return;
+        setLoading(true); setError(""); setSynced("");
+        try {
+          const response = await fetch("/api/reset-home-week", { method: "POST", headers: { "Content-Type": "application/json" } });
+          const text = await response.text();
+          let data;
+          try { data = JSON.parse(text); } catch { throw new Error("Reset API is not returning JSON."); }
+          if (!response.ok || !data.ok) throw new Error(data.error || "Home reset failed");
+          setSynced("✓ Home week reset");
+          await handlePullNotion();
+          setTimeout(() => setSynced(""), 2200);
+        } catch (error) { setError(error.message || "Home reset failed"); }
+        setLoading(false); restoreScroll(scrollY);
       };
 
       const handleSaveCheckin = async () => {
         const scrollY = window.scrollY;
-        setSaving(true);
-        setError("");
-        setSynced("");
-
+        setSaving(true); setError(""); setSynced("");
         try {
-          const response = await fetch("/api/checkin", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              date: todayKey,
-              ...checkin,
-            }),
-          });
-
+          const response = await fetch("/api/checkin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ date: todayKey, ...checkin }) });
           const text = await response.text();
           let data;
-
-          try {
-            data = JSON.parse(text);
-          } catch {
-            throw new Error("Check-in API is not returning JSON.");
-          }
-
-          if (!response.ok) {
-            throw new Error(data.error || "Check-in save failed");
-          }
-
+          try { data = JSON.parse(text); } catch { throw new Error("Check-in API is not returning JSON."); }
+          if (!response.ok) throw new Error(data.error || "Check-in save failed");
           setSynced("✓ Check-in saved");
           setTimeout(() => setSynced(""), 2200);
-        } catch (error) {
-          setError(error.message || "Check-in save failed");
-        }
-
-        setSaving(false);
-        restoreScroll(scrollY);
+        } catch (error) { setError(error.message || "Check-in save failed"); }
+        setSaving(false); restoreScroll(scrollY);
       };
 
       const { weekTasks = [], clientFocus = [], homeToday = {} } = notionData;
-
       const sortedTasks = [...weekTasks].sort((a, b) => {
         const priorityDiff = priorityRank(a.priority) - priorityRank(b.priority);
         if (priorityDiff !== 0) return priorityDiff;
         return new Date(a.dueDate || "9999-12-31") - new Date(b.dueDate || "9999-12-31");
       });
-
       const todaysTasks = sortedTasks.filter((task) => task.dueDate === todayKey);
       const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
 
       function CompactText({ label, value, onChange, placeholder }) {
-        return (
-          <div className="field">
-            <label>{label}</label>
-            <textarea
-              className="compact-textarea"
-              value={value}
-              onChange={onChange}
-              placeholder={placeholder}
-              rows="2"
-            />
-          </div>
-        );
+        return <div className="field"><label>{label}</label><textarea className="compact-textarea" value={value} onChange={onChange} placeholder={placeholder} rows="2" /></div>;
       }
 
       function renderTodayCard() {
-        return (
-          <div className="card">
-            <h2 className="card-title">Today</h2>
-            <p className="gentle-copy">
-              Don’t plan the whole life. Just choose the day.
-            </p>
-
-            <div className="grid-2">
-              <CompactText
-                label="Main focus"
-                value={checkin.mainFocus}
-                onChange={(e) => updateCheckin("mainFocus", e.target.value)}
-                placeholder="What matters most today?"
-              />
-
-              <CompactText
-                label="Next right step"
-                value={checkin.nextRightStep}
-                onChange={(e) => updateCheckin("nextRightStep", e.target.value)}
-                placeholder="What is the next tiny action?"
-              />
-            </div>
-
-            <div className="grid-3" style={{ marginTop: "12px" }}>
-              <CompactText
-                label="One me thing"
-                value={checkin.oneMeThing}
-                onChange={(e) => updateCheckin("oneMeThing", e.target.value)}
-                placeholder="e.g. walk, shower, quiet time"
-              />
-
-              <CompactText
-                label="One home thing"
-                value={checkin.oneHomeThing}
-                onChange={(e) => updateCheckin("oneHomeThing", e.target.value)}
-                placeholder="e.g. clear sofa, laundry, kitchen reset"
-              />
-
-              <CompactText
-                label="One work thing"
-                value={checkin.oneWorkThing}
-                onChange={(e) => updateCheckin("oneWorkThing", e.target.value)}
-                placeholder="e.g. challenge page, client task"
-              />
-            </div>
-          </div>
-        );
+        return <div className="card"><h2 className="card-title">Today</h2><p className="gentle-copy">Don’t plan the whole life. Just choose the day.</p><div className="grid-2"><CompactText label="Main focus" value={checkin.mainFocus} onChange={(e) => updateCheckin("mainFocus", e.target.value)} placeholder="What matters most today?" /><CompactText label="Next right step" value={checkin.nextRightStep} onChange={(e) => updateCheckin("nextRightStep", e.target.value)} placeholder="What is the next tiny action?" /></div><div className="grid-3" style={{ marginTop: "12px" }}><CompactText label="One me thing" value={checkin.oneMeThing} onChange={(e) => updateCheckin("oneMeThing", e.target.value)} placeholder="e.g. walk, shower, quiet time" /><CompactText label="One home thing" value={checkin.oneHomeThing} onChange={(e) => updateCheckin("oneHomeThing", e.target.value)} placeholder="e.g. clear sofa, laundry, kitchen reset" /><CompactText label="One work thing" value={checkin.oneWorkThing} onChange={(e) => updateCheckin("oneWorkThing", e.target.value)} placeholder="e.g. challenge page, client task" /></div></div>;
       }
 
       function renderBodyAnchorsCard() {
-        return (
-          <div className="card">
-            <h2 className="card-title">Body Anchors</h2>
-            <p className="gentle-copy">
-              This is the foundation. These are not extras — they are what help you feel like you.
-            </p>
-
-            <div className="grid-2">
-              <div className="field">
-                <label>Mood</label>
-                <select value={checkin.mood} onChange={(e) => updateCheckin("mood", e.target.value)}>
-                  <option>Calm</option>
-                  <option>Okay</option>
-                  <option>Foggy</option>
-                  <option>Anxious</option>
-                  <option>Overwhelmed</option>
-                </select>
-              </div>
-
-              <div className="field">
-                <label>Energy 1–10</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={checkin.energy}
-                  onChange={(e) => updateCheckin("energy", e.target.value)}
-                  placeholder="1-10"
-                />
-              </div>
-            </div>
-
-            <div className="anchor-tabs">
-              {bodyAnchors.map((anchor) => (
-                <label className="anchor-tab" key={anchor.key}>
-                  <input
-                    type="checkbox"
-                    checked={!!checkin[anchor.key]}
-                    onChange={() => updateCheckin(anchor.key, !checkin[anchor.key])}
-                  />
-                  <span className={checkin[anchor.key] ? "checked-text" : ""}>
-                    {anchor.label}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-        );
+        return <div className="card"><h2 className="card-title">Body Anchors</h2><p className="gentle-copy">This is the foundation. These are not extras — they are what help you feel like you.</p><div className="grid-2"><div className="field"><label>Mood</label><select value={checkin.mood} onChange={(e) => updateCheckin("mood", e.target.value)}><option>Calm</option><option>Okay</option><option>Foggy</option><option>Anxious</option><option>Overwhelmed</option></select></div><div className="field"><label>Energy 1–10</label><input type="number" min="1" max="10" value={checkin.energy} onChange={(e) => updateCheckin("energy", e.target.value)} placeholder="1-10" /></div></div><div className="anchor-tabs">{bodyAnchors.map((anchor) => <label className="anchor-tab" key={anchor.key}><input type="checkbox" checked={!!checkin[anchor.key]} onChange={() => updateCheckin(anchor.key, !checkin[anchor.key])} /><span className={checkin[anchor.key] ? "checked-text" : ""}>{anchor.label}</span></label>)}</div></div>;
       }
 
       function renderOpenLoopsCard() {
-        return (
-          <div className="card">
-            <h2 className="card-title">Open Loops</h2>
-            <p className="gentle-copy">
-              Get it out of your head. This is not a performance list — it’s a pressure valve. Use Wispr Flow here if talking is easier.
-            </p>
-
-            <textarea
-              className="brain-textarea"
-              value={checkin.openLoops}
-              onChange={(e) => updateCheckin("openLoops", e.target.value)}
-              placeholder="Pay Sammy, book dog groomer, sew badge, check credit card..."
-              rows="6"
-            />
-          </div>
-        );
+        return <div className="card"><h2 className="card-title">Open Loops</h2><p className="gentle-copy">Get it out of your head. This is not a performance list — it’s a pressure valve. Use Wispr Flow here if talking is easier.</p><textarea className="brain-textarea" value={checkin.openLoops} onChange={(e) => updateCheckin("openLoops", e.target.value)} placeholder="Pay Sammy, book dog groomer, sew badge, check credit card..." rows="6" /></div>;
       }
 
       function renderHomeCard() {
-        return (
-          <div className="card">
-            <h2 className="card-title">Home</h2>
-
-            {Object.keys(homeToday).length > 0 ? (
-              <div className="home-grid">
-                {homeToday.mealPlan && (
-                  <div className="home-item">
-                    <div className="home-item-label">Meal plan</div>
-                    <div className="home-item-value">{homeToday.mealPlan}</div>
-                  </div>
-                )}
-
-                {homeToday.movement && (
-                  <div className="home-item">
-                    <div className="home-item-label">Movement</div>
-                    <div className="home-item-value">{homeToday.movement}</div>
-                  </div>
-                )}
-
-                {homeToday.energyNote && (
-                  <div className="home-item">
-                    <div className="home-item-label">Energy</div>
-                    <div className="home-item-value">{homeToday.energyNote}</div>
-                  </div>
-                )}
-
-                {homeToday.dailyBasics?.length > 0 && (
-                  <div className="home-item">
-                    <div className="home-item-label">Daily basics</div>
-                    <div className="basics-list">
-                      {homeToday.dailyBasics.map((basic) => {
-                        const key = `basic-${todayKey}-${basic}`;
-                        return (
-                          <label className="basic-tag check-row" key={key}>
-                            <input
-                              type="checkbox"
-                              checked={!!checkedItems[key]}
-                              onChange={() => toggleChecked(key)}
-                            />
-                            <span className={checkedItems[key] ? "checked-text" : ""}>
-                              {basic}
-                            </span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {homeToday.homeAnchors?.length > 0 && (
-                  <div className="home-item">
-                    <div className="home-item-label">Anchors</div>
-                    <div className="basics-list">
-                      {homeToday.homeAnchors.map((anchor) => {
-                        const key = `anchor-${todayKey}-${anchor}`;
-                        return (
-                          <label className="basic-tag check-row" key={key}>
-                            <input
-                              type="checkbox"
-                              checked={!!checkedItems[key]}
-                              onChange={() => toggleChecked(key)}
-                            />
-                            <span className={checkedItems[key] ? "checked-text" : ""}>
-                              {anchor}
-                            </span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="small-note">
-                No home data yet. Hit Pull Notion.
-              </p>
-            )}
-          </div>
-        );
+        return <div className="card"><h2 className="card-title">Home</h2><button type="button" className="reset-home-button" onClick={handleResetHomeWeek} disabled={loading}>{loading ? "Resetting..." : "Reset home week"}</button>{Object.keys(homeToday).length > 0 ? <div className="home-grid">{homeToday.mealPlan && <div className="home-item"><div className="home-item-label">Meal plan</div><div className="home-item-value">{homeToday.mealPlan}</div></div>}{homeToday.movement && <div className="home-item"><div className="home-item-label">Movement</div><div className="home-item-value">{homeToday.movement}</div></div>}{homeToday.energyNote && <div className="home-item"><div className="home-item-label">Energy</div><div className="home-item-value">{homeToday.energyNote}</div></div>}{homeToday.dailyBasics?.length > 0 && <div className="home-item"><div className="home-item-label">Daily basics</div><div className="basics-list">{homeToday.dailyBasics.map((basic) => { const key = `basic-${todayKey}-${basic}`; return <label className="basic-tag check-row" key={key}><input type="checkbox" checked={!!checkedItems[key]} onChange={() => toggleChecked(key)} /><span className={checkedItems[key] ? "checked-text" : ""}>{basic}</span></label>; })}</div></div>}{homeToday.homeAnchors?.length > 0 && <div className="home-item"><div className="home-item-label">Anchors</div><div className="basics-list">{homeToday.homeAnchors.map((anchor) => { const key = `anchor-${todayKey}-${anchor}`; return <label className="basic-tag check-row" key={key}><input type="checkbox" checked={!!checkedItems[key]} onChange={() => toggleChecked(key)} /><span className={checkedItems[key] ? "checked-text" : ""}>{anchor}</span></label>; })}</div></div>}</div> : <p className="small-note">No home data yet. Hit Pull Notion.</p>}</div>;
       }
 
       function renderWorkCard() {
-        return (
-          <div className="card">
-            <h2 className="card-title">Work</h2>
-
-            <div className="toggle-row">
-              <button
-                type="button"
-                className={`toggle-button ${!todayOnly ? "active" : ""}`}
-                onClick={() => setTodayOnly(false)}
-              >
-                This week
-              </button>
-
-              <button
-                type="button"
-                className={`toggle-button ${todayOnly ? "active" : ""}`}
-                onClick={() => setTodayOnly(true)}
-              >
-                Today only
-              </button>
-            </div>
-
-            {visibleTasks.length > 0 ? (
-              <>
-                <p className="section-label">
-                  {todayOnly ? "Tasks due today" : "Tasks due this week"}
-                </p>
-
-                {visibleTasks.map((task) => {
-                  const key = `task-${todayKey}-${task.id || task.name}-${task.dueDate}`;
-
-                  return (
-                    <div className="task-item" key={key}>
-                      <label className="check-row">
-                        <input
-                          type="checkbox"
-                          checked={!!checkedItems[key]}
-                          onChange={() => toggleChecked(key)}
-                        />
-                        <div>
-                          <div className={checkedItems[key] ? "checked-text" : ""}>
-                            {task.name}
-                          </div>
-                          <div className="task-priority">
-                            {task.priority} • {task.dueDate}
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-                  );
-                })}
-              </>
-            ) : (
-              <p className="small-note">
-                {todayOnly ? "No tasks due today." : "No tasks due this week."}
-              </p>
-            )}
-
-            {clientFocus.length > 0 && (
-              <>
-                <p className="section-label">Client focus</p>
-
-                {clientFocus.map((item, i) => (
-                  <div className="client-item" key={i}>
-                    <div className="client-name">{item.client}</div>
-                    {item.focus && <div className="client-focus">{item.focus}</div>}
-                    {item.nextStep && <div className="client-focus">Next: {item.nextStep}</div>}
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        );
+        return <div className="card"><h2 className="card-title">Work</h2><div className="toggle-row"><button type="button" className={`toggle-button ${!todayOnly ? "active" : ""}`} onClick={() => setTodayOnly(false)}>This week</button><button type="button" className={`toggle-button ${todayOnly ? "active" : ""}`} onClick={() => setTodayOnly(true)}>Today only</button></div>{visibleTasks.length > 0 ? <><p className="section-label">{todayOnly ? "Tasks due today" : "Tasks due this week"}</p>{visibleTasks.map((task) => { const key = `task-${todayKey}-${task.id || task.name}-${task.dueDate}`; return <div className="task-item" key={key}><label className="check-row"><input type="checkbox" checked={!!checkedItems[key]} onChange={() => toggleChecked(key)} /><div><div className={checkedItems[key] ? "checked-text" : ""}>{task.name}</div><div className="task-priority">{task.priority} • {task.dueDate}</div></div></label></div>; })}</> : <p className="small-note">{todayOnly ? "No tasks due today." : "No tasks due this week."}</p>}{clientFocus.length > 0 && <><p className="section-label">Client focus</p>{clientFocus.map((item, i) => <div className="client-item" key={i}><div className="client-name">{item.client}</div>{item.focus && <div className="client-focus">{item.focus}</div>}{item.nextStep && <div className="client-focus">Next: {item.nextStep}</div>}</div>)}</>}</div>;
       }
 
       function renderEveningResetCard() {
-        return (
-          <div className="card">
-            <h2 className="card-title">Evening Reset</h2>
-            <p className="gentle-copy">
-              Close the loop gently. This is what makes the weekly check-in useful. Use Wispr Flow if talking it out is easier.
-            </p>
-
-            <div className="grid-2">
-              <div className="field">
-                <label>What worked?</label>
-                <textarea
-                  className="notes-textarea"
-                  value={checkin.whatWorked}
-                  onChange={(e) => updateCheckin("whatWorked", e.target.value)}
-                  placeholder="What helped today?"
-                />
-              </div>
-
-              <div className="field">
-                <label>What felt heavy?</label>
-                <textarea
-                  className="notes-textarea"
-                  value={checkin.whatFeltHeavy}
-                  onChange={(e) => updateCheckin("whatFeltHeavy", e.target.value)}
-                  placeholder="What drained you or felt hard?"
-                />
-              </div>
-            </div>
-
-            <div className="grid-2" style={{ marginTop: "12px" }}>
-              <div className="field">
-                <label>Carry forward</label>
-                <textarea
-                  className="notes-textarea"
-                  value={checkin.carryForward}
-                  onChange={(e) => updateCheckin("carryForward", e.target.value)}
-                  placeholder="What needs moving to tomorrow?"
-                />
-              </div>
-
-              <div className="field">
-                <label>Evening notes</label>
-                <textarea
-                  className="notes-textarea"
-                  value={checkin.eveningNotes}
-                  onChange={(e) => updateCheckin("eveningNotes", e.target.value)}
-                  placeholder="Workout Witch, breathwork, tomorrow prep..."
-                />
-              </div>
-            </div>
-          </div>
-        );
+        return <div className="card"><h2 className="card-title">Evening Reset</h2><p className="gentle-copy">Close the loop gently. This is what makes the weekly check-in useful. Use Wispr Flow if talking it out is easier.</p><div className="grid-2"><div className="field"><label>What worked?</label><textarea className="notes-textarea" value={checkin.whatWorked} onChange={(e) => updateCheckin("whatWorked", e.target.value)} placeholder="What helped today?" /></div><div className="field"><label>What felt heavy?</label><textarea className="notes-textarea" value={checkin.whatFeltHeavy} onChange={(e) => updateCheckin("whatFeltHeavy", e.target.value)} placeholder="What drained you or felt hard?" /></div></div><div className="grid-2" style={{ marginTop: "12px" }}><div className="field"><label>Carry forward</label><textarea className="notes-textarea" value={checkin.carryForward} onChange={(e) => updateCheckin("carryForward", e.target.value)} placeholder="What needs moving to tomorrow?" /></div><div className="field"><label>Evening notes</label><textarea className="notes-textarea" value={checkin.eveningNotes} onChange={(e) => updateCheckin("eveningNotes", e.target.value)} placeholder="Workout Witch, breathwork, tomorrow prep..." /></div></div></div>;
       }
 
-      return (
-        <div className="planner">
-          <div className="inner">
-            <header className="header">
-              <div>
-                <p className="header-date">{todayStr}</p>
-                <h1 className="header-title">My Planner Dashboard</h1>
-                <p className="header-quote">{todayQuote}</p>
-              </div>
-
-              <div className="header-right">
-                <div className="button-row">
-                  <button
-                    type="button"
-                    className="sync-button"
-                    onClick={handlePullNotion}
-                    disabled={loading}
-                  >
-                    {loading ? "Pulling..." : "Pull Notion"}
-                  </button>
-
-                  <button
-                    type="button"
-                    className="save-button"
-                    onClick={handleSaveCheckin}
-                    disabled={saving}
-                  >
-                    {saving ? "Saving..." : "Save Check-in"}
-                  </button>
-                </div>
-
-                {synced && <span className="sync-indicator">{synced}</span>}
-                {error && <div className="error-message">{error}</div>}
-              </div>
-            </header>
-
-            {renderTodayCard()}
-            {renderBodyAnchorsCard()}
-            {renderOpenLoopsCard()}
-            {renderHomeCard()}
-
-            {isWeekend ? (
-              <>
-                <button
-                  type="button"
-                  className="weekend-work-button"
-                  onClick={() => setShowWorkWeekend(!showWorkWeekend)}
-                >
-                  {showWorkWeekend ? "Hide work again" : "Peek at work"}
-                </button>
-
-                {showWorkWeekend && renderWorkCard()}
-              </>
-            ) : (
-              renderWorkCard()
-            )}
-
-            {renderEveningResetCard()}
-          </div>
-        </div>
-      );
+      return <div className="planner"><div className="inner"><header className="header"><div><p className="header-date">{todayStr}</p><h1 className="header-title">My Planner Dashboard</h1><p className="header-quote">{todayQuote}</p></div><div className="header-right"><div className="button-row"><button type="button" className="sync-button" onClick={handlePullNotion} disabled={loading}>{loading ? "Pulling..." : "Pull Notion"}</button><button type="button" className="save-button" onClick={handleSaveCheckin} disabled={saving}>{saving ? "Saving..." : "Save Check-in"}</button></div>{synced && <span className="sync-indicator">{synced}</span>}{error && <div className="error-message">{error}</div>}</div></header>{renderTodayCard()}{renderBodyAnchorsCard()}{renderOpenLoopsCard()}{renderHomeCard()}<button type="button" className="peek-work-button" onClick={() => setShowWork(!showWork)}>{showWork ? "Hide work again" : "Peek at work"}</button>{showWork && renderWorkCard()}{renderEveningResetCard()}</div></div>;
     }
 
     ReactDOM.render(<PlannerDashboard />, document.getElementById("root"));
