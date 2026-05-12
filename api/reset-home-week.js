@@ -39,8 +39,10 @@ function getMonday(date) {
   const d = new Date(date);
   const day = d.getDay(); // Sunday = 0
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+
   d.setDate(diff);
   d.setHours(12, 0, 0, 0);
+
   return d;
 }
 
@@ -66,7 +68,7 @@ function getPageTitle(dayName) {
   };
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     if (!process.env.NOTION_TOKEN) {
       return res.status(500).json({
@@ -84,12 +86,12 @@ export default async function handler(req, res) {
     });
 
     const pages = response.results;
-
     const updates = [];
 
     for (const dayName of DAY_ORDER) {
       const index = DAY_ORDER.indexOf(dayName);
       const date = new Date(monday);
+
       date.setDate(monday.getDate() + index);
 
       const matchingPage = pages.find((page) => getDayName(page) === dayName);
@@ -99,6 +101,7 @@ export default async function handler(req, res) {
           day: dayName,
           status: "missing",
         });
+
         continue;
       }
 
@@ -106,16 +109,19 @@ export default async function handler(req, res) {
         page_id: matchingPage.id,
         properties: {
           Day: getPageTitle(dayName),
+
           "Day of Week": {
             select: {
               name: dayName,
             },
           },
+
           Date: {
             date: {
               start: toIsoDate(date),
             },
           },
+
           Status: {
             status: {
               name: "Not started",
@@ -137,11 +143,11 @@ export default async function handler(req, res) {
       updates,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Home week reset failed:", error);
 
     return res.status(500).json({
       ok: false,
-      error: error.message,
+      error: error.message || "Home week reset failed",
     });
   }
-}
+};
