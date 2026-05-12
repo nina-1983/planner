@@ -1,10 +1,31 @@
-const { Client } = require("@notionhq/client");
-
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
-
 const CHECKIN_DB_ID = process.env.NOTION_CHECKIN_DB_ID;
+
+async function notionRequest(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+      "Notion-Version": "2022-06-28",
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  const text = await response.text();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { raw: text };
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || data.error || text || "Notion request failed");
+  }
+
+  return data;
+}
 
 function richText(value) {
   return {
@@ -48,7 +69,6 @@ function dateProp(value) {
 
 function numberProp(value) {
   const number = Number(value);
-
   return {
     number: Number.isFinite(number) ? number : null,
   };
@@ -113,21 +133,22 @@ module.exports = async function handler(req, res) {
       "Evening Notes": richText(body.eveningNotes),
     };
 
-    const page = await notion.pages.create({
-      parent: {
-        database_id: CHECKIN_DB_ID,
-      },
-      properties,
+    const data = await notionRequest("https://api.notion.com/v1/pages", {
+      method: "POST",
+      body: JSON.stringify({
+        parent: {
+          database_id: CHECKIN_DB_ID,
+        },
+        properties,
+      }),
     });
 
     return res.status(200).json({
       ok: true,
-      id: page.id,
-      url: page.url,
+      id: data.id,
+      url: data.url,
     });
   } catch (error) {
-    console.error("Check-in save failed:", error);
-
     return res.status(500).json({
       ok: false,
       error: error.message || "Check-in save failed",
