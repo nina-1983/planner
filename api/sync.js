@@ -1,5 +1,6 @@
 const TASKS_DB_ID = process.env.NOTION_TASKS_DB_ID;
-const CLIENT_FOCUS_DB_ID = process.env.NOTION_CLIENT_FOCUS_DB_ID;
+const CLIENT_FOCUS_DB_ID =
+  process.env.NOTION_CLIENT_FOCUS_DB_ID || "323c1adacbe780648916df44ef5a8465";
 const HOME_DB_ID =
   process.env.NOTION_HOME_DB_ID || "dd7ba18f385d407c977d1eb47f0671f2";
 
@@ -157,18 +158,26 @@ module.exports = async function handler(req, res) {
     if (CLIENT_FOCUS_DB_ID) {
       const clientResponse = await queryDatabase(CLIENT_FOCUS_DB_ID, {
         page_size: 100,
+        filter: {
+          property: "Status",
+          select: {
+            equals: "Focus This Week",
+          },
+        },
       });
 
       clientFocus = (clientResponse.results || []).map((page) => {
         const props = page.properties || {};
 
         return {
+          id: page.id,
           client:
+            getTitle(props.Clients) ||
             getTitle(props.Client) ||
             getTitle(props.Name) ||
-            getTitle(props["Client Name"]) ||
             "Client",
           focus:
+            getRichText(props["This Week Focus"]) ||
             getRichText(props.Focus) ||
             getRichText(props["Weekly Focus"]) ||
             "",
@@ -176,6 +185,9 @@ module.exports = async function handler(req, res) {
             getRichText(props["Next Step"]) ||
             getRichText(props["Next Action"]) ||
             "",
+          waitingOn: getRichText(props["Waiting On"]) || "",
+          priority: getSelect(props.Priority) || "",
+          status: getSelect(props.Status) || "",
         };
       });
     }
