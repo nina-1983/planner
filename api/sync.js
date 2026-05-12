@@ -1,12 +1,7 @@
-const { Client } = require("@notionhq/client");
-
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
-
 const TASKS_DB_ID = process.env.NOTION_TASKS_DB_ID;
 const CLIENT_FOCUS_DB_ID = process.env.NOTION_CLIENT_FOCUS_DB_ID;
-const HOME_DB_ID = process.env.NOTION_HOME_DB_ID || "dd7ba18f385d407c977d1eb47f0671f2";
+const HOME_DB_ID =
+  process.env.NOTION_HOME_DB_ID || "dd7ba18f385d407c977d1eb47f0671f2";
 
 function getUKDateKey(date = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -27,15 +22,51 @@ function getWeekRange() {
 
   const monday = new Date(ukToday);
   monday.setDate(diffToMonday);
+  monday.setHours(12, 0, 0, 0);
 
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(12, 0, 0, 0);
 
   return {
     today: getUKDateKey(ukToday),
     monday: getUKDateKey(monday),
     sunday: getUKDateKey(sunday),
   };
+}
+
+async function notionRequest(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+      "Notion-Version": "2022-06-28",
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  const text = await response.text();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { raw: text };
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || data.error || text || "Notion request failed");
+  }
+
+  return data;
+}
+
+async function queryDatabase(databaseId, payload = {}) {
+  return notionRequest(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }
 
 function getTitle(property) {
@@ -77,8 +108,7 @@ module.exports = async function handler(req, res) {
     let homeToday = {};
 
     if (TASKS_DB_ID) {
-      const tasksResponse = await notion.databases.query({
-        database_id: TASKS_DB_ID,
+      const tasksResponse = await queryDatabase(TASKS_DB_ID, {
         page_size: 100,
         filter: {
           and: [
@@ -98,8 +128,8 @@ module.exports = async function handler(req, res) {
         },
       });
 
-      weekTasks = tasksResponse.results.map((page) => {
-        const props = page.properties;
+      weekTasks = (tasksResponse.results || []).map((page) => {
+        const props = page.properties || {};
 
         return {
           id: page.id,
@@ -125,13 +155,12 @@ module.exports = async function handler(req, res) {
     }
 
     if (CLIENT_FOCUS_DB_ID) {
-      const clientResponse = await notion.databases.query({
-        database_id: CLIENT_FOCUS_DB_ID,
+      const clientResponse = await queryDatabase(CLIENT_FOCUS_DB_ID, {
         page_size: 100,
       });
 
-      clientFocus = clientResponse.results.map((page) => {
-        const props = page.properties;
+      clientFocus = (clientResponse.results || []).map((page) => {
+        const props = page.properties || {};
 
         return {
           client:
@@ -152,8 +181,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (HOME_DB_ID) {
-      const homeResponse = await notion.databases.query({
-        database_id: HOME_DB_ID,
+      const homeResponse = await queryDatabase(HOME_DB_ID, {
         page_size: 20,
         filter: {
           property: "Date",
@@ -163,10 +191,10 @@ module.exports = async function handler(req, res) {
         },
       });
 
-      const homePage = homeResponse.results[0];
+      const homePage = homeResponse.results?.[0];
 
       if (homePage) {
-        const props = homePage.properties;
+        const props = homePage.properties || {};
 
         homeToday = {
           id: homePage.id,
@@ -204,8 +232,6 @@ module.exports = async function handler(req, res) {
       },
     });
   } catch (error) {
-    console.error("Sync failed:", error);
-
     return res.status(500).json({
       error: error.message || "Notion sync failed",
     });
