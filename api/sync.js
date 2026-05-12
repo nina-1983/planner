@@ -70,12 +70,49 @@ async function queryDatabase(databaseId, payload = {}) {
   });
 }
 
+function extractPlainText(items) {
+  if (!Array.isArray(items)) return "";
+
+  return items
+    .map((item) => item.plain_text || item.text?.content || "")
+    .join("")
+    .trim();
+}
+
 function getTitle(property) {
-  return property?.title?.map((item) => item.plain_text).join("") || "";
+  if (!property) return "";
+
+  if (Array.isArray(property.title)) {
+    return extractPlainText(property.title);
+  }
+
+  if (Array.isArray(property.rich_text)) {
+    return extractPlainText(property.rich_text);
+  }
+
+  if (property.type && Array.isArray(property[property.type])) {
+    return extractPlainText(property[property.type]);
+  }
+
+  return "";
 }
 
 function getRichText(property) {
-  return property?.rich_text?.map((item) => item.plain_text).join("") || "";
+  if (!property) return "";
+
+  if (Array.isArray(property.rich_text)) {
+    return extractPlainText(property.rich_text);
+  }
+
+  if (Array.isArray(property.title)) {
+    return extractPlainText(property.title);
+  }
+
+  if (property.type && Array.isArray(property[property.type])) {
+    return extractPlainText(property[property.type]);
+  }
+
+  return "";
 }
 
 function getSelect(property) {
@@ -83,7 +120,7 @@ function getSelect(property) {
 }
 
 function getStatus(property) {
-  return property?.status?.name || "";
+  return property?.status?.name || property?.select?.name || "";
 }
 
 function getMultiSelect(property) {
@@ -169,13 +206,18 @@ module.exports = async function handler(req, res) {
       clientFocus = (clientResponse.results || []).map((page) => {
         const props = page.properties || {};
 
+        const clientName =
+          getTitle(props["Clients"]) ||
+          getTitle(props.Clients) ||
+          getTitle(props.Client) ||
+          getTitle(props.Name) ||
+          getRichText(props["Clients"]) ||
+          getRichText(props.Clients) ||
+          "Unnamed client";
+
         return {
           id: page.id,
-          client:
-            getTitle(props.Clients) ||
-            getTitle(props.Client) ||
-            getTitle(props.Name) ||
-            "Client",
+          client: clientName,
           focus:
             getRichText(props["This Week Focus"]) ||
             getRichText(props.Focus) ||
@@ -185,9 +227,21 @@ module.exports = async function handler(req, res) {
             getRichText(props["Next Step"]) ||
             getRichText(props["Next Action"]) ||
             "",
-          waitingOn: getRichText(props["Waiting On"]) || "",
-          priority: getSelect(props.Priority) || "",
-          status: getSelect(props.Status) || "",
+          waitingOn:
+            getRichText(props["Waiting On"]) ||
+            "",
+          abbeyTasks:
+            getRichText(props["Abbey Tasks"]) ||
+            "",
+          priority:
+            getSelect(props.Priority) ||
+            "",
+          status:
+            getStatus(props.Status) ||
+            "",
+          dueDate:
+            getDate(props["Due Date"]) ||
+            "",
         };
       });
     }
