@@ -530,6 +530,21 @@
       }, 0);
     }
 
+    function CompactText({ label, value, onChange, placeholder }) {
+      return (
+        <div className="field">
+          <label>{label}</label>
+          <textarea
+            className="compact-textarea"
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            rows="2"
+          />
+        </div>
+      );
+    }
+
     function PlannerDashboard() {
       const today = new Date();
       const todayKey = getUKDateKey(today);
@@ -735,21 +750,6 @@
 
       const todaysTasks = sortedTasks.filter((task) => task.dueDate === todayKey);
       const visibleTasks = todayOnly ? todaysTasks : sortedTasks;
-
-      function CompactText({ label, value, onChange, placeholder }) {
-        return (
-          <div className="field">
-            <label>{label}</label>
-            <textarea
-              className="compact-textarea"
-              value={value}
-              onChange={onChange}
-              placeholder={placeholder}
-              rows="2"
-            />
-          </div>
-        );
-      }
 
       function renderTodayCard() {
         return (
